@@ -128,10 +128,17 @@ main{ padding:20px 16px 0; }
 .section-title i{ color:var(--gold); font-size:16px; }
 
 /* Panchang */
-.panchang-row{ display:flex; align-items:center; }
-.panchang-label{ margin:0 0 4px; font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.08em; }
-.panchang-value{ margin:0; font-family:var(--font-display); font-size:17px; color:var(--maroon); }
-.panchang-divider{ width:1px; height:38px; background:var(--cream-warm); margin:0 20px; }
+.panchang-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px 10px;
+  margin-bottom:14px;
+}
+.panchang-item:nth-child(4), .panchang-item:nth-child(5){ grid-column:span 1; }
+.panchang-label{ margin:0 0 4px; font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; }
+.panchang-value{ margin:0; font-family:var(--font-display); font-size:14px; color:var(--maroon); line-height:1.3; }
+.panchang-suryatime{
+  text-align:center; font-size:12px; color:var(--ink-soft);
+  padding-top:12px; border-top:1px solid var(--cream-warm);
+}
 
 /* Video */
 .video-wrap{ position:relative; width:100%; padding-top:56.25%; border-radius:14px; overflow:hidden; background:#000; }
@@ -315,3 +322,4 @@ main{ padding:20px 16px 0; }
 .mt-16{ margin-top:16px; }
 .text-center{ text-align:center; }
 .small-note{ font-size:12px; color:var(--ink-soft); text-align:center; margin-top:10px; }
+                   
