@@ -1,0 +1,314 @@
+/* ==========================================================
+   DESIGN TOKENS
+   ========================================================== */
+:root{
+  --maroon: #7A2E2E;
+  --maroon-dark: #591F1F;
+  --gold: #C9A227;
+  --gold-light: #E4C765;
+  --cream: #FBF6EC;
+  --cream-warm: #F3E9D2;
+  --ink: #2B2420;
+  --ink-soft: #6B5E52;
+  --white: #FFFFFF;
+  --success: #3F7D5C;
+  --shadow: 0 8px 24px rgba(89,31,31,0.08);
+  --shadow-lg: 0 16px 40px rgba(89,31,31,0.14);
+  --radius: 20px;
+  --font-display: 'Tiro Devanagari Hindi', serif;
+  --font-body: 'Hind', sans-serif;
+}
+
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  font-family:var(--font-body);
+  background:var(--cream);
+  color:var(--ink);
+  padding-bottom:88px;
+  overflow-x:hidden;
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+}
+:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+
+/* ==========================================================
+   HEADER
+   ========================================================== */
+.app-header{
+  background:linear-gradient(160deg, var(--maroon) 0%, var(--maroon-dark) 100%);
+  color:var(--white);
+  padding:22px 16px 40px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-radius:0 0 28px 28px;
+  box-shadow:var(--shadow-lg);
+  position:relative;
+}
+.header-title{ text-align:center; }
+.eyebrow{
+  display:block;
+  font-size:11px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--gold-light);
+  margin-bottom:2px;
+}
+.app-header h1{
+  font-family:var(--font-display);
+  font-size:24px;
+  margin:0;
+  font-weight:400;
+  letter-spacing:0.02em;
+}
+.icon-btn{
+  background:rgba(255,255,255,0.12);
+  border:none;
+  color:var(--white);
+  width:40px; height:40px;
+  border-radius:12px;
+  font-size:17px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+}
+.icon-btn:active{ transform:scale(0.92); }
+
+/* Diya divider — signature element */
+.diya-row{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin-top:-16px;
+  position:relative;
+  z-index:5;
+}
+.diya-row span{
+  width:8px; height:8px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold) 60%, #9c7a13 100%);
+  box-shadow:0 0 6px 1px rgba(201,162,39,0.6);
+  animation:flicker 2.4s ease-in-out infinite;
+}
+.diya-row span:nth-child(2n){ animation-delay:0.3s; }
+.diya-row span:nth-child(3n){ animation-delay:0.6s; }
+@keyframes flicker{
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%{ opacity:0.55; transform:scale(0.8); }
+}
+
+/* ==========================================================
+   MAIN CONTENT / CARDS
+   ========================================================== */
+main{ padding:20px 16px 0; }
+.card{
+  background:var(--white);
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:var(--shadow);
+  margin-bottom:18px;
+}
+.section-eyebrow{
+  font-size:11px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--gold);
+  font-weight:700;
+  margin:0 0 10px;
+}
+.section-title{
+  font-family:var(--font-display);
+  font-size:19px;
+  color:var(--maroon);
+  margin:26px 4px 12px;
+  display:flex; align-items:center; gap:10px;
+}
+.section-title i{ color:var(--gold); font-size:16px; }
+
+/* Panchang */
+.panchang-row{ display:flex; align-items:center; }
+.panchang-label{ margin:0 0 4px; font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.08em; }
+.panchang-value{ margin:0; font-family:var(--font-display); font-size:17px; color:var(--maroon); }
+.panchang-divider{ width:1px; height:38px; background:var(--cream-warm); margin:0 20px; }
+
+/* Video */
+.video-wrap{ position:relative; width:100%; padding-top:56.25%; border-radius:14px; overflow:hidden; background:#000; }
+.video-wrap iframe{ position:absolute; inset:0; width:100%; height:100%; border:none; }
+
+/* Shlok */
+.shlok-text{ margin:0; font-family:var(--font-display); font-size:17px; line-height:1.8; text-align:center; color:var(--ink); }
+
+/* ==========================================================
+   SERVICE GRID
+   ========================================================== */
+.services-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.service-card{
+  background:var(--white);
+  border:none;
+  padding:18px 6px;
+  border-radius:18px;
+  text-align:center;
+  box-shadow:var(--shadow);
+  font-family:var(--font-body);
+  cursor:pointer;
+}
+.service-card:active{ transform:scale(0.94); }
+.service-card i{ font-size:22px; color:var(--maroon); margin-bottom:8px; display:block; }
+.service-card span{ font-size:12px; font-weight:600; color:var(--ink); }
+
+/* ==========================================================
+   MALA COUNTER
+   ========================================================== */
+.select-input{
+  width:100%; padding:13px; border-radius:14px;
+  border:1px solid var(--cream-warm); background:var(--cream);
+  font-family:inherit; font-size:15px; color:var(--ink);
+  margin-bottom:10px;
+}
+.mantra-preview{
+  text-align:center; background:var(--cream-warm); padding:12px;
+  border-radius:12px; font-size:14px; font-weight:600; color:var(--maroon);
+  margin:0 0 18px; display:none; font-family:var(--font-display);
+}
+.mala-stats{ display:flex; justify-content:space-around; align-items:center; margin-bottom:22px; }
+.mala-stats p{ margin:2px 0 0; font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; }
+.mala-num{ font-size:32px; font-weight:700; color:var(--gold); }
+.bead-num{ font-size:52px; font-weight:700; color:var(--maroon); }
+
+.btn-primary{
+  width:100%; border:none; padding:16px; border-radius:16px;
+  background:linear-gradient(135deg, var(--gold) 0%, #B08A1D 100%);
+  color:var(--white); font-size:17px; font-weight:700; cursor:pointer;
+  box-shadow:0 8px 18px rgba(201,162,39,0.35);
+  font-family:var(--font-body);
+}
+.btn-primary:active{ transform:scale(0.98); }
+.btn-text{
+  display:block; width:100%; background:none; border:none; margin-top:14px;
+  text-align:center; color:var(--ink-soft); font-size:12px; cursor:pointer;
+}
+
+/* ==========================================================
+   BOTTOM NAV
+   ========================================================== */
+.bottom-nav{
+  position:fixed; bottom:0; left:0; right:0;
+  background:rgba(255,255,255,0.97); backdrop-filter:blur(14px);
+  display:flex; justify-content:space-around; padding:10px 0 12px;
+  border-top:1px solid var(--cream-warm);
+  z-index:2000; border-radius:22px 22px 0 0;
+  box-shadow:0 -6px 20px rgba(89,31,31,0.06);
+}
+.nav-link{ color:#B7A99A; text-decoration:none; font-size:20px; text-align:center; }
+.nav-link.active{ color:var(--maroon); }
+.nav-link p{ margin:3px 0 0; font-size:10px; font-weight:600; }
+
+/* ==========================================================
+   SIDEBAR
+   ========================================================== */
+.sidebar-backdrop{
+  position:fixed; inset:0; background:rgba(43,36,32,0.5);
+  z-index:4000; opacity:0; pointer-events:none; transition:opacity .25s;
+}
+.sidebar-backdrop.show{ opacity:1; pointer-events:auto; }
+.sidebar{
+  position:fixed; top:0; left:0; bottom:0; width:280px;
+  background:var(--maroon-dark); z-index:4500;
+  transform:translateX(-100%); transition:transform .3s ease;
+  padding:26px 0 20px; overflow-y:auto;
+}
+.sidebar.open{ transform:translateX(0); }
+.sidebar-head{ display:flex; align-items:center; gap:12px; padding:0 22px 22px; border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:10px; }
+.sidebar-avatar{
+  width:48px; height:48px; border-radius:50%;
+  background:linear-gradient(135deg, var(--gold), #9c7a13);
+  color:var(--white); display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:18px; font-family:var(--font-display);
+}
+.sidebar-name{ margin:0; color:var(--white); font-weight:600; font-size:15px; }
+.sidebar-sub{ margin:2px 0 0; color:var(--gold-light); font-size:12px; }
+.sidebar a{
+  display:flex; align-items:center; gap:12px;
+  padding:14px 22px; color:#EFE6D8; text-decoration:none; font-size:15px;
+}
+.sidebar a i{ width:18px; color:var(--gold-light); }
+.sidebar a:active{ background:rgba(255,255,255,0.06); }
+
+/* ==========================================================
+   OVERLAY SHEET (for services, auth, admin)
+   ========================================================== */
+.overlay-backdrop{
+  position:fixed; inset:0; background:rgba(43,36,32,0.55);
+  z-index:5000; opacity:0; pointer-events:none; transition:opacity .25s;
+}
+.overlay-backdrop.show{ opacity:1; pointer-events:auto; }
+.overlay-sheet{
+  position:fixed; left:0; right:0; bottom:0; max-height:92vh;
+  background:var(--cream); border-radius:26px 26px 0 0;
+  z-index:5500; transform:translateY(100%); transition:transform .32s cubic-bezier(.32,.72,0,1);
+  padding:10px 20px 30px; overflow-y:auto;
+}
+.overlay-sheet.open{ transform:translateY(0); }
+.overlay-handle{ width:40px; height:4px; background:var(--cream-warm); border-radius:4px; margin:6px auto 14px; }
+.overlay-close{
+  position:absolute; top:16px; right:18px;
+  background:var(--cream-warm); border:none; width:34px; height:34px;
+  border-radius:50%; font-size:15px; color:var(--ink); cursor:pointer;
+}
+
+/* Shared overlay content styles */
+.ov-title{ font-family:var(--font-display); font-size:22px; color:var(--maroon); margin:6px 0 18px; display:flex; align-items:center; gap:10px; }
+.ov-title i{ color:var(--gold); }
+.seva-card{
+  background:var(--white); border-radius:16px; padding:16px;
+  box-shadow:var(--shadow); margin-bottom:14px; cursor:pointer;
+}
+.seva-card h3{ margin:0 0 6px; font-family:var(--font-display); font-size:17px; color:var(--maroon); }
+.seva-card p{ margin:0 0 10px; font-size:13px; color:var(--ink-soft); line-height:1.6; }
+.seva-price{ font-weight:700; color:var(--gold); font-size:16px; }
+.form-input, .form-textarea, .form-select{
+  width:100%; padding:13px; border-radius:12px;
+  border:1px solid var(--cream-warm); background:var(--white);
+  font-family:inherit; font-size:15px; margin-bottom:12px; color:var(--ink);
+}
+.form-label{ font-size:12px; font-weight:600; color:var(--ink-soft); margin:0 0 6px; display:block; }
+.btn-secondary{
+  width:100%; border:1.5px solid var(--maroon); background:transparent;
+  color:var(--maroon); padding:14px; border-radius:14px; font-weight:700;
+  font-size:15px; cursor:pointer; font-family:var(--font-body);
+}
+.link-btn{ background:none; border:none; color:var(--maroon); font-weight:600; text-decoration:underline; cursor:pointer; font-size:14px; }
+
+/* Chat (Bhakti AI) */
+.chat-window{
+  height:320px; overflow-y:auto; border-radius:16px;
+  background:var(--white); padding:14px; margin-bottom:12px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.chat-msg{ padding:11px 14px; border-radius:14px; font-size:14px; line-height:1.6; max-width:85%; }
+.chat-msg.user{ background:var(--maroon); color:var(--white); align-self:flex-end; border-bottom-right-radius:4px; }
+.chat-msg.ai{ background:var(--cream-warm); color:var(--ink); align-self:flex-start; border-bottom-left-radius:4px; }
+.chat-input-row{ display:flex; gap:8px; }
+.chat-input-row input{ flex:1; padding:13px; border-radius:14px; border:1px solid var(--cream-warm); font-family:inherit; }
+.chat-send{ background:var(--maroon); color:var(--white); border:none; width:48px; border-radius:14px; font-size:16px; }
+
+/* Quiz */
+.quiz-option{
+  display:block; width:100%; text-align:right; padding:14px 16px;
+  border-radius:14px; border:1.5px solid var(--cream-warm); background:var(--white);
+  margin-bottom:10px; font-family:inherit; font-size:15px; cursor:pointer; color:var(--ink);
+  text-align:left;
+}
+.quiz-option.correct{ border-color:var(--success); background:#EAF5EF; color:var(--success); font-weight:700; }
+.quiz-option.wrong{ border-color:#B23A3A; background:#FBEAEA; color:#B23A3A; }
+
+/* Empty states */
+.empty-state{ text-align:center; padding:40px 20px; color:var(--ink-soft); }
+.empty-state i{ font-size:34px; color:var(--gold); margin-bottom:12px; display:block; }
+
+/* Utility */
+.mt-16{ margin-top:16px; }
+.text-center{ text-align:center; }
+.small-note{ font-size:12px; color:var(--ink-soft); text-align:center; margin-top:10px; }
