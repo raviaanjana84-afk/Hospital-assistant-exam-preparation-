@@ -2,6 +2,9 @@
 // BHAKTI AI — Gemini-powered spiritual Q&A
 // ==========================================
 import { GEMINI_API_KEY } from "./config.js";
+import { GoogleGenAI } from "https://esm.run/@google/genai";
+
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 window.renderBhaktiAI = () => {
   window.showOverlay(`
@@ -36,32 +39,18 @@ async function askBhaktiAI(){
   chat.innerHTML += `<div class="chat-msg ai" id="${loadingId}">सोच रहा हूँ...</div>`;
   chat.scrollTop = chat.scrollHeight;
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
   try{
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: "आचार्य हर्ष शर्मा की तरह, विनम्र और आध्यात्मिक शैली में हिंदी में उत्तर दें: " + msg }] }]
-      })
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: "आचार्य हर्ष शर्मा की तरह, विनम्र और आध्यात्मिक शैली में हिंदी में उत्तर दें: " + msg
     });
-    const data = await response.json();
-    console.log("Gemini raw response:", data);
-
-    if (data?.error){
-      document.getElementById(loadingId).remove();
-      appendMsg(chat, `त्रुटि: ${data.error.message || "अज्ञात त्रुटि"}`, "ai");
-      return;
-    }
-
-    const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "क्षमा करें, उत्तर नहीं मिल सका। पुनः प्रयास करें।";
+    const aiText = response?.text || "क्षमा करें, उत्तर नहीं मिल सका। पुनः प्रयास करें।";
     document.getElementById(loadingId).remove();
     appendMsg(chat, aiText, "ai");
   }catch(e){
     console.error("Bhakti AI error:", e);
     document.getElementById(loadingId).remove();
-    appendMsg(chat, "नेटवर्क त्रुटि हुई। कृपया पुनः प्रयास करें।", "ai");
+    appendMsg(chat, `त्रुटि: ${e.message || "नेटवर्क त्रुटि हुई। कृपया पुनः प्रयास करें।"}`, "ai");
   }
 }
 
