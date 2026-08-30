@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/update-panchang",
+      "schedule": "30 0 * * *"
+    }
+  ]
+}
