@@ -36,7 +36,7 @@ async function askBhaktiAI(){
   chat.innerHTML += `<div class="chat-msg ai" id="${loadingId}">सोच रहा हूँ...</div>`;
   chat.scrollTop = chat.scrollHeight;
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   try{
     const response = await fetch(endpoint, {
@@ -47,6 +47,14 @@ async function askBhaktiAI(){
       })
     });
     const data = await response.json();
+    console.log("Gemini raw response:", data);
+
+    if (data?.error){
+      document.getElementById(loadingId).remove();
+      appendMsg(chat, `त्रुटि: ${data.error.message || "अज्ञात त्रुटि"}`, "ai");
+      return;
+    }
+
     const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "क्षमा करें, उत्तर नहीं मिल सका। पुनः प्रयास करें।";
     document.getElementById(loadingId).remove();
     appendMsg(chat, aiText, "ai");
