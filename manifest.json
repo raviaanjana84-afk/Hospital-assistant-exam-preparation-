@@ -1,0 +1,19 @@
+{
+  "name": "आचार्य हर्ष शर्मा",
+  "short_name": "आचार्य जी",
+  "description": "डिजिटल आध्यात्मिक सेवा - हवन, पूजन, कुंडली, मंत्र और भक्ति AI",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FBF6EC",
+  "theme_color": "#7A2E2E",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3031/3031149.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
