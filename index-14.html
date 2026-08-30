@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>आचार्य हर्ष शर्मा | डिजिटल आध्यात्मिक सेवा</title>
+<meta name="theme-color" content="#7A2E2E">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3031/3031149.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= TOP HEADER ================= -->
+<header class="app-header">
+  <button class="icon-btn" id="menuBtn" aria-label="मेनू खोलें"><i class="fa-solid fa-bars"></i></button>
+  <div class="header-title">
+    <span class="eyebrow">श्री गणेशाय नमः</span>
+    <h1>आचार्य हर्ष शर्मा</h1>
+  </div>
+  <button class="icon-btn" id="profileBtn" aria-label="प्रोफाइल"><i class="fa-solid fa-user"></i></button>
+</header>
+
+<div class="diya-row" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<!-- ================= SIDEBAR ================= -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <div class="sidebar-avatar" id="sideAvatar">?</div>
+    <div>
+      <p class="sidebar-name" id="sideName">अतिथि जी</p>
+      <p class="sidebar-sub" id="sideSub">लॉगिन करें</p>
+    </div>
+  </div>
+  <a href="#" data-route="home"><i class="fa-solid fa-house"></i> होम</a>
+  <a href="#" data-route="bookings"><i class="fa-solid fa-calendar-check"></i> मेरी बुकिंग</a>
+  <a href="#" data-route="profile"><i class="fa-solid fa-user-pen"></i> प्रोफाइल</a>
+  <a href="#" id="sideAuthBtn"><i class="fa-solid fa-right-to-bracket"></i> लॉगिन करें</a>
+  <a href="#" id="sideAdminBtn" style="display:none;"><i class="fa-solid fa-shield-halved"></i> एडमिन पैनल</a>
+  <a href="#" id="shareBtn"><i class="fa-solid fa-share-nodes"></i> शेयर करें</a>
+</nav>
+
+<!-- ================= MAIN CONTENT ================= -->
+<main id="mainContent">
+
+  <!-- Panchang + Video card -->
+  <section class="card panchang-card">
+    <div class="panchang-row">
+      <div>
+        <p class="panchang-label">आज की तिथि</p>
+        <p class="panchang-value" id="displayTithi">लोड हो रहा है...</p>
+      </div>
+      <div class="panchang-divider"></div>
+      <div>
+        <p class="panchang-label">शुभ मुहूर्त</p>
+        <p class="panchang-value" id="displayMuhurat">लोड हो रहा है...</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="videoCard" style="display:none;">
+    <p class="section-eyebrow">आज का सत्संग</p>
+    <div class="video-wrap">
+      <iframe id="videoPlayer" src="" allowfullscreen title="सत्संग वीडियो"></iframe>
+    </div>
+  </section>
+
+  <section class="card shlok-card">
+    <p class="section-eyebrow">आज का श्लोक</p>
+    <p class="shlok-text" id="displayShlok">लोड हो रहा है...</p>
+  </section>
+
+  <!-- Service grid -->
+  <p class="section-title"><i class="fa-solid fa-bolt"></i> हमारी सेवाएँ</p>
+  <div class="services-grid">
+    <button class="service-card" data-route="hawan"><i class="fa-solid fa-fire"></i><span>हवन</span></button>
+    <button class="service-card" data-route="pujan"><i class="fa-solid fa-hands-praying"></i><span>पूजन</span></button>
+    <button class="service-card" data-route="kundli"><i class="fa-solid fa-star-and-crescent"></i><span>कुंडली</span></button>
+    <button class="service-card" data-route="mantra"><i class="fa-solid fa-book-open"></i><span>मंत्र</span></button>
+    <button class="service-card" data-route="quiz"><i class="fa-solid fa-scroll"></i><span>क्विज</span></button>
+    <button class="service-card" data-route="bhaktiAI"><i class="fa-solid fa-sparkles"></i><span>भक्ति AI</span></button>
+  </div>
+
+  <!-- Digital Mala -->
+  <p class="section-title"><i class="fa-solid fa-dharmachakra"></i> डिजिटल जप माला</p>
+  <section class="card mala-card">
+    <select id="mantraType" class="select-input">
+      <option value="सामान्य">सामान्य जप</option>
+      <option value="महामृत्युंजय">महामृत्युंजय मंत्र</option>
+      <option value="गायत्री मंत्र">गायत्री मंत्र</option>
+      <option value="ॐ नमः शिवाय">ॐ नमः शिवाय</option>
+    </select>
+    <p class="mantra-preview" id="mText"></p>
+    <div class="mala-stats">
+      <div><span class="mala-num" id="mCount">0</span><p>माला</p></div>
+      <div><span class="bead-num" id="bCount">0</span><p>मनके</p></div>
+    </div>
+    <button class="btn-primary" id="japBtn"><i class="fa-solid fa-hand-point-up"></i> जप करें</button>
+    <button class="btn-text" id="resetJapBtn">काउंटर रीसेट करें</button>
+  </section>
+
+  <div style="height:30px"></div>
+</main>
+
+<!-- ================= BOTTOM NAV ================= -->
+<nav class="bottom-nav">
+  <a href="#" class="nav-link active" data-route="home"><i class="fa-solid fa-house"></i><p>होम</p></a>
+  <a href="#" class="nav-link" data-route="quiz"><i class="fa-solid fa-puzzle-piece"></i><p>क्विज</p></a>
+  <a href="#" class="nav-link" data-route="mantra"><i class="fa-solid fa-om"></i><p>मंत्र</p></a>
+  <a href="#" class="nav-link" data-route="profile"><i class="fa-solid fa-user"></i><p>प्रोफाइल</p></a>
+</nav>
+
+<!-- ================= OVERLAY (for sections + auth + admin) ================= -->
+<div class="overlay-backdrop" id="overlayBackdrop"></div>
+<div class="overlay-sheet" id="overlaySheet">
+  <div class="overlay-handle"></div>
+  <button class="overlay-close" id="overlayClose" aria-label="बंद करें"><i class="fa-solid fa-xmark"></i></button>
+  <div id="overlay-content"></div>
+</div>
+
+<audio id="shankh" src="https://www.soundjay.com/buttons/beep-01a.mp3" preload="auto"></audio>
+
+<script type="module" src="config.js"></script>
+<script type="module" src="main.js"></script>
+<script type="module" src="mala.js"></script>
+<script type="module" src="hawan.js"></script>
+<script type="module" src="pujan.js"></script>
+<script type="module" src="kundli.js"></script>
+<script type="module" src="mantra.js"></script>
+<script type="module" src="quiz.js"></script>
+<script type="module" src="bhakti-ai.js"></script>
+<script type="module" src="auth.js"></script>
+<script type="module" src="admin.js"></script>
+</body>
+</html>
