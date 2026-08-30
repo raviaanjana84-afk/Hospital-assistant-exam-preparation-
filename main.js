@@ -85,7 +85,11 @@ async function loadDailyContent(){
     const snap = await getDoc(doc(db, "content", "today"));
     if (snap.exists()){
       const val = snap.data();
+      document.getElementById("displayVaar").innerText = val.vaar || "उपलब्ध नहीं";
       document.getElementById("displayTithi").innerText = val.tithi || "उपलब्ध नहीं";
+      document.getElementById("displayNakshatra").innerText = val.nakshatra || "उपलब्ध नहीं";
+      document.getElementById("displayYoga").innerText = val.yoga || "उपलब्ध नहीं";
+      document.getElementById("displayKarana").innerText = val.karana || "उपलब्ध नहीं";
       document.getElementById("displayMuhurat").innerText = val.muhurat || "उपलब्ध नहीं";
       document.getElementById("displayShlok").innerText = val.shlok || "आज कोई श्लोक उपलब्ध नहीं है।";
       if (val.youtubeId){
@@ -93,15 +97,16 @@ async function loadDailyContent(){
         document.getElementById("videoCard").style.display = "block";
       }
     } else {
-      document.getElementById("displayTithi").innerText = "जल्द आ रहा है";
-      document.getElementById("displayMuhurat").innerText = "जल्द आ रहा है";
+      ["displayVaar","displayTithi","displayNakshatra","displayYoga","displayKarana","displayMuhurat"].forEach(id => {
+        document.getElementById(id).innerText = "जल्द आ रहा है";
+      });
       document.getElementById("displayShlok").innerText = "जल्द आ रहा है 🙏";
     }
   }catch(e){
     console.error("Daily content load error:", e);
-    document.getElementById("displayTithi").innerText = "उपलब्ध नहीं";
-    document.getElementById("displayMuhurat").innerText = "उपलब्ध नहीं";
-    document.getElementById("displayShlok").innerText = "उपलब्ध नहीं";
+    ["displayVaar","displayTithi","displayNakshatra","displayYoga","displayKarana","displayMuhurat","displayShlok"].forEach(id => {
+      document.getElementById(id).innerText = "उपलब्ध नहीं";
+    });
   }
 }
 
@@ -140,4 +145,3 @@ if ("serviceWorker" in navigator) {
 
 // Expose for other modules
 window.__handleRoute = handleRoute;
-  
