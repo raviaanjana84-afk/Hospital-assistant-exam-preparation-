@@ -145,3 +145,4 @@ if ("serviceWorker" in navigator) {
 
 // Expose for other modules
 window.__handleRoute = handleRoute;
+  
