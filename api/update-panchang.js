@@ -140,10 +140,17 @@ export default async function handler(req, res){
 
     await saveToFirestore(tithiText, muhuratText, shlok);
 
-    res.status(200).json({ success: true, tithi: tithiText, muhurat: muhuratText, shlok });
+    res.status(200).json({
+      success: true,
+      tithi: tithiText,
+      muhurat: muhuratText,
+      shlok,
+      debug_raw_keys: Object.keys(panchangData || {}),
+      debug_auspicious: panchangData?.auspicious_period || null
+    });
   }catch(e){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message });
   }
-}
-
+    }
+        
