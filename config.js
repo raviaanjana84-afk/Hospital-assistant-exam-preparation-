@@ -19,7 +19,7 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 // Pandit ji ka WhatsApp number (booking messages ke liye) — isko apna number se update karo
-export const PANDIT_WHATSAPP = "919999999999"; // TODO: 91 + apna 10-digit number daalo
+export const PANDIT_WHATSAPP = "918319714682"; // TODO: 91 + apna 10-digit number daalo
 
 // Gemini API key (Bhakti AI ke liye)
 export const GEMINI_API_KEY = "AQ.Ab8RN6LcHi30EHoHO6C3uwuqAAMwaMQliHFwRDp1yu-wyIRTsw";
