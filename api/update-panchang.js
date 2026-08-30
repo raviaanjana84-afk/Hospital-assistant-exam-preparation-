@@ -199,5 +199,5 @@ export default async function handler(req, res){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message });
   }
-        }
-
+    }
+        
