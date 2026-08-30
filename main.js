@@ -109,11 +109,35 @@ document.addEventListener("DOMContentLoaded", loadDailyContent);
 
 // ---------- PWA install ----------
 let deferredPrompt;
+const installBanner = document.getElementById("installBanner");
+const installBtn = document.getElementById("installBtn");
+
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
+  if (installBanner) installBanner.style.display = "block";
 });
+
+installBtn?.addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === "accepted" && installBanner) installBanner.style.display = "none";
+  deferredPrompt = null;
+});
+
+window.addEventListener("appinstalled", () => {
+  if (installBanner) installBanner.style.display = "none";
+});
+
+// ---------- Service worker registration ----------
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .catch((err) => console.error("Service worker registration failed:", err));
+  });
+}
 
 // Expose for other modules
 window.__handleRoute = handleRoute;
-
+  
