@@ -143,8 +143,8 @@ function formatPanchang(panchangData){
 
     // सूर्योदय / सूर्यास्त ("मुहूर्त" की जगह उपयोगी जानकारी)
     if (panchangData?.sunrise && panchangData?.sunset){
-      const sunriseTime = new Date(panchangData.sunrise).toLocaleTimeString('hi-IN', { hour:'2-digit', minute:'2-digit' });
-      const sunsetTime = new Date(panchangData.sunset).toLocaleTimeString('hi-IN', { hour:'2-digit', minute:'2-digit' });
+      const sunriseTime = new Date(panchangData.sunrise).toLocaleTimeString('hi-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' });
+      const sunsetTime = new Date(panchangData.sunset).toLocaleTimeString('hi-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' });
       result.muhurat = `सूर्योदय ${sunriseTime} · सूर्यास्त ${sunsetTime}`;
     }
   }catch(e){
@@ -199,5 +199,5 @@ export default async function handler(req, res){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message });
   }
-    }
-        
+              }
+             
