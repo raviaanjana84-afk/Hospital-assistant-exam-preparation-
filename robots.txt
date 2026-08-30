@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://harsh-sharma-chi.vercel.app/sitemap.xml
