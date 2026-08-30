@@ -58,17 +58,30 @@
 
   <!-- Panchang + Video card -->
   <section class="card panchang-card">
-    <div class="panchang-row">
-      <div>
-        <p class="panchang-label">आज की तिथि</p>
+    <p class="section-eyebrow">आज का पंचांग</p>
+    <div class="panchang-grid">
+      <div class="panchang-item">
+        <p class="panchang-label">वार</p>
+        <p class="panchang-value" id="displayVaar">लोड हो रहा है...</p>
+      </div>
+      <div class="panchang-item">
+        <p class="panchang-label">तिथि</p>
         <p class="panchang-value" id="displayTithi">लोड हो रहा है...</p>
       </div>
-      <div class="panchang-divider"></div>
-      <div>
-        <p class="panchang-label">शुभ मुहूर्त</p>
-        <p class="panchang-value" id="displayMuhurat">लोड हो रहा है...</p>
+      <div class="panchang-item">
+        <p class="panchang-label">नक्षत्र</p>
+        <p class="panchang-value" id="displayNakshatra">लोड हो रहा है...</p>
+      </div>
+      <div class="panchang-item">
+        <p class="panchang-label">योग</p>
+        <p class="panchang-value" id="displayYoga">लोड हो रहा है...</p>
+      </div>
+      <div class="panchang-item">
+        <p class="panchang-label">करण</p>
+        <p class="panchang-value" id="displayKarana">लोड हो रहा है...</p>
       </div>
     </div>
+    <div class="panchang-suryatime" id="displayMuhurat">लोड हो रहा है...</div>
   </section>
 
   <section class="card" id="videoCard" style="display:none;">
@@ -156,4 +169,5 @@
 <script type="module" src="auth.js"></script>
 <script type="module" src="admin.js"></script>
 </body>
-</html>
+  </html>
+  
