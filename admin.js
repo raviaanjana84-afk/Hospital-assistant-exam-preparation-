@@ -55,11 +55,27 @@ async function renderAdminBookings(){
 function renderAdminContentForm(){
   const body = document.getElementById("adminBody");
   body.innerHTML = `
-    <label class="form-label">आज की तिथि</label>
+    <p class="small-note" style="text-align:left; margin-bottom:14px;">
+      नोट: पंचांग (वार, तिथि, नक्षत्र, योग, करण) अपने आप हर दिन अपडेट होता है। यहाँ से बदलाव अस्थायी होगा — अगली स्वचालित अपडेट पर वापस बदल जाएगा।
+    </p>
+
+    <label class="form-label">वार</label>
+    <input type="text" id="admVaar" class="form-input" placeholder="जैसे: सोमवार">
+
+    <label class="form-label">तिथि</label>
     <input type="text" id="admTithi" class="form-input" placeholder="जैसे: शुक्ल पक्ष द्वितीया">
 
-    <label class="form-label">शुभ मुहूर्त</label>
-    <input type="text" id="admMuhurat" class="form-input" placeholder="जैसे: प्रातः 6:00 - 8:30">
+    <label class="form-label">नक्षत्र</label>
+    <input type="text" id="admNakshatra" class="form-input" placeholder="जैसे: रोहिणी">
+
+    <label class="form-label">योग</label>
+    <input type="text" id="admYoga" class="form-input" placeholder="जैसे: सिद्धि">
+
+    <label class="form-label">करण</label>
+    <input type="text" id="admKarana" class="form-input" placeholder="जैसे: बव">
+
+    <label class="form-label">सूर्योदय/सूर्यास्त</label>
+    <input type="text" id="admMuhurat" class="form-input" placeholder="जैसे: सूर्योदय 06:00 · सूर्यास्त 18:30">
 
     <label class="form-label">आज का श्लोक</label>
     <textarea id="admShlok" class="form-textarea" rows="3" placeholder="श्लोक यहाँ लिखें..."></textarea>
@@ -73,7 +89,11 @@ function renderAdminContentForm(){
   `;
 
   document.getElementById("admSaveBtn").addEventListener("click", async () => {
+    const vaar = document.getElementById("admVaar").value.trim();
     const tithi = document.getElementById("admTithi").value.trim();
+    const nakshatra = document.getElementById("admNakshatra").value.trim();
+    const yoga = document.getElementById("admYoga").value.trim();
+    const karana = document.getElementById("admKarana").value.trim();
     const muhurat = document.getElementById("admMuhurat").value.trim();
     const shlok = document.getElementById("admShlok").value.trim();
     const youtubeId = document.getElementById("admYoutube").value.trim();
@@ -83,7 +103,7 @@ function renderAdminContentForm(){
     okBox.style.display = "none";
 
     try{
-      await setDoc(doc(db, "content", "today"), { tithi, muhurat, shlok, youtubeId }, { merge: true });
+      await setDoc(doc(db, "content", "today"), { vaar, tithi, nakshatra, yoga, karana, muhurat, shlok, youtubeId }, { merge: true });
       okBox.innerText = "सफलतापूर्वक सहेजा गया!";
       okBox.style.display = "block";
     }catch(e){
@@ -93,4 +113,3 @@ function renderAdminContentForm(){
     }
   });
 }
-
