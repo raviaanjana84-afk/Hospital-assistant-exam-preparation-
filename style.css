@@ -1,4 +1,4 @@
-/* ==========================================================
+   /* ==========================================================
    DESIGN TOKENS
    ========================================================== */
 :root{
@@ -149,6 +149,25 @@ main{ padding:20px 16px 0; }
 
 /* Install banner */
 .install-banner{ border:1.5px dashed var(--gold); background:var(--cream-warm); }
+
+/* Contact cards */
+.contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:6px; }
+.contact-card{
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  background:var(--white); border-radius:18px; padding:18px 10px;
+  text-decoration:none; box-shadow:var(--shadow);
+}
+.contact-card:active{ transform:scale(0.96); }
+.contact-card i{ font-size:26px; margin-bottom:4px; }
+.contact-card span{ font-size:13px; font-weight:700; color:var(--ink); }
+.contact-card small{ font-size:11px; color:var(--ink-soft); }
+.contact-card.whatsapp i{ color:#25D366; }
+.contact-card.instagram i{
+  background: linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
 /* ==========================================================
    SERVICE GRID
