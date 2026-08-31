@@ -18,9 +18,10 @@ export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Pandit ji ka WhatsApp number (booking messages ke liye) — isko apna number se update karo
-export const PANDIT_WHATSAPP = "918319714682"; // TODO: 91 + apna 10-digit number daalo
+// Pandit ji ka WhatsApp number (booking messages ke liye)
+export const PANDIT_WHATSAPP = "918319714682";
+export const PANDIT_PHONE_DISPLAY = "+91 83197 14682";
+export const PANDIT_INSTAGRAM = "https://www.instagram.com/pt_harshu0732?igsi=aWd6YjJlMXgxNWo0";
 
 // Gemini API key (Bhakti AI ke liye)
 export const GEMINI_API_KEY = "AQ.Ab8RN6LcHi30EHoHO6C3uwuqAAMwaMQliHFwRDp1yu-wyIRTsw";
-
