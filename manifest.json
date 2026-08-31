@@ -2,6 +2,7 @@
   "name": "आचार्य हर्ष शर्मा - डिजिटल आध्यात्मिक सेवा",
   "short_name": "आचार्य जी",
   "description": "हवन, पूजन, कुंडली, मंत्र, डिजिटल जप माला और भक्ति AI - सब एक ही ऐप में।",
+  "id": "/",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -11,16 +12,22 @@
   "lang": "hi-IN",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/192/3031/3031149.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3031/3031149.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
