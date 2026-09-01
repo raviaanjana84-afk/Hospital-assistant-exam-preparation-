@@ -1,4 +1,4 @@
-// ==========================================
+    // ==========================================
 // VERCEL SERVERLESS FUNCTION
 // Roz automatically Ujjain ka Panchang laata hai (Prokerala API se)
 // aur Firestore me save karta hai (content/today document).
@@ -51,6 +51,22 @@ const KARANA_HINDI = {
   "Vishti":"विष्टि","Shakuni":"शकुनि","Chatushpada":"चतुष्पद","Naga":"नाग","Kimstughna":"किंस्तुघ्न"
 };
 
+// 12 राशियाँ (zodiac signs) — Prokerala API keys aur Hindi names
+const ZODIAC_SIGNS = [
+  { key: "aries", hindi: "मेष" },
+  { key: "taurus", hindi: "वृषभ" },
+  { key: "gemini", hindi: "मिथुन" },
+  { key: "cancer", hindi: "कर्क" },
+  { key: "leo", hindi: "सिंह" },
+  { key: "virgo", hindi: "कन्या" },
+  { key: "libra", hindi: "तुला" },
+  { key: "scorpio", hindi: "वृश्चिक" },
+  { key: "sagittarius", hindi: "धनु" },
+  { key: "capricorn", hindi: "मकर" },
+  { key: "aquarius", hindi: "कुंभ" },
+  { key: "pisces", hindi: "मीन" }
+];
+
 // रोज़ बदलने वाले श्लोकों की सूची — दिन के अनुसार अपने आप घूमती है
 const SHLOK_LIST = [
   "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन। मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥ — गीता 2.47",
@@ -97,6 +113,50 @@ async function getPanchang(token){
   const data = await res.json();
   if (data.errors) throw new Error("Prokerala panchang error: " + JSON.stringify(data.errors));
   return data.data;
+}
+
+async function getHoroscopeForSign(token, signKey){
+  const url = `https://api.prokerala.com/v2/horoscope/daily?datetime=${encodeURIComponent(new Date().toISOString())}&sign=${signKey}&la=hi&type=general,love,career,health`;
+
+  const res = await fetch(url, {
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+  const data = await res.json();
+  if (data.errors){
+    console.error(`Horoscope error for ${signKey}:`, JSON.stringify(data.errors));
+    return null;
+  }
+  return data.data;
+}
+
+async function getAllHoroscopes(token){
+  const results = {};
+  for (const sign of ZODIAC_SIGNS){
+    try{
+      const horoscopeData = await getHoroscopeForSign(token, sign.key);
+      const predictions = horoscopeData?.daily_predictions?.[0]?.prediction || [];
+
+      const byType = {};
+      predictions.forEach(p => {
+        byType[p.type] = p.predictions?.[0]?.prediction || "";
+      });
+
+      results[sign.key] = {
+        hindi: sign.hindi,
+        general: byType.general || "उपलब्ध नहीं",
+        love: byType.love || "उपलब्ध नहीं",
+        career: byType.career || "उपलब्ध नहीं",
+        health: byType.health || "उपलब्ध नहीं"
+      };
+    }catch(e){
+      console.error(`Failed to fetch horoscope for ${sign.key}:`, e);
+      results[sign.key] = {
+        hindi: sign.hindi,
+        general: "उपलब्ध नहीं", love: "उपलब्ध नहीं", career: "उपलब्ध नहीं", health: "उपलब्ध नहीं"
+      };
+    }
+  }
+  return results;
 }
 
 function formatPanchang(panchangData){
@@ -154,8 +214,8 @@ function formatPanchang(panchangData){
   return result;
 }
 
-async function saveToFirestore(panchang, shlok){
-  const fieldPaths = ["tithi","vaar","nakshatra","yoga","karana","muhurat","shlok","updatedAt","source"];
+async function saveToFirestore(panchang, shlok, horoscopes){
+  const fieldPaths = ["tithi","vaar","nakshatra","yoga","karana","muhurat","shlok","horoscopes","updatedAt","source"];
   const maskParams = fieldPaths.map(f => `updateMask.fieldPaths=${f}`).join("&");
   const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/content/today?key=${FIREBASE_API_KEY}&${maskParams}`;
 
@@ -168,6 +228,7 @@ async function saveToFirestore(panchang, shlok){
       karana: { stringValue: panchang.karana },
       muhurat: { stringValue: panchang.muhurat },
       shlok: { stringValue: shlok },
+      horoscopes: { stringValue: JSON.stringify(horoscopes) },
       updatedAt: { stringValue: new Date().toISOString() },
       source: { stringValue: "prokerala-auto" }
     }
@@ -191,13 +252,14 @@ export default async function handler(req, res){
     const panchangData = await getPanchang(token);
     const panchang = formatPanchang(panchangData);
     const shlok = getTodayShlok();
+    const horoscopes = await getAllHoroscopes(token);
 
-    await saveToFirestore(panchang, shlok);
+    await saveToFirestore(panchang, shlok, horoscopes);
 
-    res.status(200).json({ success: true, ...panchang, shlok });
+    res.status(200).json({ success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length });
   }catch(e){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message });
   }
-              }
-             
+}
+  
