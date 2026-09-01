@@ -98,6 +98,43 @@
     <p class="shlok-text" id="displayShlok">लोड हो रहा है...</p>
   </section>
 
+  <p class="section-title"><i class="fa-solid fa-star"></i> आज का राशिफल</p>
+  <section class="card" id="rashifalCard">
+    <div id="rashiSelectView">
+      <p style="margin:0 0 12px; font-size:14px; color:var(--ink-soft);">अपनी राशि चुनें और रोज़ अपना व्यक्तिगत राशिफल देखें</p>
+      <select id="rashiSelect" class="select-input">
+        <option value="">राशि चुनें...</option>
+        <option value="aries">मेष</option>
+        <option value="taurus">वृषभ</option>
+        <option value="gemini">मिथुन</option>
+        <option value="cancer">कर्क</option>
+        <option value="leo">सिंह</option>
+        <option value="virgo">कन्या</option>
+        <option value="libra">तुला</option>
+        <option value="scorpio">वृश्चिक</option>
+        <option value="sagittarius">धनु</option>
+        <option value="capricorn">मकर</option>
+        <option value="aquarius">कुंभ</option>
+        <option value="pisces">मीन</option>
+      </select>
+      <button class="btn-primary" id="rashiConfirmBtn">राशिफल देखें</button>
+    </div>
+
+    <div id="rashiDisplayView" style="display:none;">
+      <div class="rashi-header">
+        <span class="rashi-badge" id="rashiName">—</span>
+        <button class="link-btn" id="rashiChangeBtn">बदलें</button>
+      </div>
+      <div class="rashi-tabs">
+        <button class="rashi-tab active" data-type="general">सामान्य</button>
+        <button class="rashi-tab" data-type="love">प्रेम</button>
+        <button class="rashi-tab" data-type="career">करियर</button>
+        <button class="rashi-tab" data-type="health">स्वास्थ्य</button>
+      </div>
+      <p class="rashi-text" id="rashiText">लोड हो रहा है...</p>
+    </div>
+  </section>
+
   <p class="section-title"><i class="fa-solid fa-phone"></i> संपर्क करें</p>
   <div class="contact-grid">
     <a href="https://wa.me/918319714682" target="_blank" rel="noopener" class="contact-card whatsapp">
@@ -185,5 +222,5 @@
 <script type="module" src="auth.js"></script>
 <script type="module" src="admin.js"></script>
 </body>
-  </html>
-  
+                                                                         </html>
+      
