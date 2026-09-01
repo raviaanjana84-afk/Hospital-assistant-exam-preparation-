@@ -1,4 +1,4 @@
-   /* ==========================================================
+/* ==========================================================
    DESIGN TOKENS
    ========================================================== */
 :root{
@@ -168,6 +168,21 @@ main{ padding:20px 16px 0; }
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Rashifal */
+.rashi-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.rashi-badge{
+  font-family:var(--font-display); font-size:19px; color:var(--maroon);
+  background:var(--cream-warm); padding:6px 16px; border-radius:20px;
+}
+.rashi-tabs{ display:flex; gap:6px; margin-bottom:14px; overflow-x:auto; }
+.rashi-tab{
+  flex:1; white-space:nowrap; padding:9px 6px; border-radius:10px; border:none;
+  background:var(--cream-warm); color:var(--ink-soft); font-size:12.5px; font-weight:600;
+  font-family:var(--font-body); cursor:pointer;
+}
+.rashi-tab.active{ background:var(--maroon); color:var(--white); }
+.rashi-text{ margin:0; font-size:14px; line-height:1.7; color:var(--ink); }
 
 /* ==========================================================
    SERVICE GRID
