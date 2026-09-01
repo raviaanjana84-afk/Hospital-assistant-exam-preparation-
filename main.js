@@ -141,17 +141,17 @@ function initRashiUI(){
     selectView.style.display = "none";
     displayView.style.display = "block";
     document.getElementById("rashiName").innerText = RASHI_HINDI_NAMES[savedRashi];
-    showRashiText(savedRashi, "general");
+    showRashiText(savedRashi);
   } else {
     selectView.style.display = "block";
     displayView.style.display = "none";
   }
 }
 
-function showRashiText(rashiKey, type){
+function showRashiText(rashiKey){
   const textEl = document.getElementById("rashiText");
   if (horoscopeData && horoscopeData[rashiKey]){
-    textEl.innerText = horoscopeData[rashiKey][type] || "आज इस श्रेणी में जानकारी उपलब्ध नहीं है।";
+    textEl.innerText = horoscopeData[rashiKey].general || "आज राशिफल उपलब्ध नहीं है।";
   } else {
     textEl.innerText = "जल्द उपलब्ध होगा।";
   }
@@ -167,15 +167,6 @@ document.getElementById("rashiConfirmBtn").addEventListener("click", () => {
 document.getElementById("rashiChangeBtn").addEventListener("click", () => {
   localStorage.removeItem("user_rashi");
   initRashiUI();
-});
-
-document.querySelectorAll(".rashi-tab").forEach(tab => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll(".rashi-tab").forEach(t => t.classList.remove("active"));
-    tab.classList.add("active");
-    const savedRashi = localStorage.getItem("user_rashi");
-    if (savedRashi) showRashiText(savedRashi, tab.dataset.type);
-  });
 });
 
 document.addEventListener("DOMContentLoaded", loadHoroscopeData);
@@ -213,4 +204,3 @@ if ("serviceWorker" in navigator) {
 
 // Expose for other modules
 window.__handleRoute = handleRoute;
-    
