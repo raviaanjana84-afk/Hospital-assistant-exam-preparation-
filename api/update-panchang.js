@@ -10,6 +10,7 @@ const PROKERALA_CLIENT_ID = process.env.PROKERALA_CLIENT_ID;
 const PROKERALA_CLIENT_SECRET = process.env.PROKERALA_CLIENT_SECRET;
 const FIREBASE_PROJECT_ID = "harsh-sharma-dc962";
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // Ujjain coordinates (Simhastha/Mahakal city — appropriate default location)
 const UJJAIN_COORDINATES = "23.1765,75.7885";
@@ -116,7 +117,7 @@ async function getPanchang(token){
 }
 
 async function getHoroscopeForSign(token, signKey){
-  const url = `https://api.prokerala.com/v2/horoscope/daily?datetime=${encodeURIComponent(new Date().toISOString())}&sign=${signKey}&la=hi&type=general,love,career,health`;
+  const url = `https://api.prokerala.com/v2/horoscope/daily?datetime=${encodeURIComponent(new Date().toISOString())}&sign=${signKey}&type=general`;
 
   const res = await fetch(url, {
     headers: { "Authorization": `Bearer ${token}` }
@@ -126,37 +127,44 @@ async function getHoroscopeForSign(token, signKey){
     console.error(`Horoscope error for ${signKey}:`, JSON.stringify(data.errors));
     return null;
   }
-  if (signKey === "aries" && global.__debugRawAries === undefined){
-    global.__debugRawAries = data;
+  return data.data?.daily_prediction?.prediction || null;
+}
+
+async function translateToHindi(englishText){
+  if (!GEMINI_API_KEY || !englishText) return englishText;
+  try{
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `इस अंग्रेज़ी राशिफल को सरल, स्वाभाविक हिंदी में अनुवाद करें। केवल अनुवाद दें, कोई अतिरिक्त टिप्पणी नहीं:\n\n${englishText}` }] }]
+        })
+      }
+    );
+    const data = await res.json();
+    const translated = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    return translated || englishText;
+  }catch(e){
+    console.error("Translation error:", e);
+    return englishText;
   }
-  return data.data;
 }
 
 async function getAllHoroscopes(token){
   const results = {};
   for (const sign of ZODIAC_SIGNS){
     try{
-      const horoscopeData = await getHoroscopeForSign(token, sign.key);
-      const predictions = horoscopeData?.daily_predictions?.[0]?.prediction || [];
-
-      const byType = {};
-      predictions.forEach(p => {
-        byType[p.type] = p.predictions?.[0]?.prediction || "";
-      });
-
+      const prediction = await getHoroscopeForSign(token, sign.key);
+      const hindiPrediction = prediction ? await translateToHindi(prediction) : "उपलब्ध नहीं";
       results[sign.key] = {
         hindi: sign.hindi,
-        general: byType.general || "उपलब्ध नहीं",
-        love: byType.love || "उपलब्ध नहीं",
-        career: byType.career || "उपलब्ध नहीं",
-        health: byType.health || "उपलब्ध नहीं"
+        general: hindiPrediction
       };
     }catch(e){
       console.error(`Failed to fetch horoscope for ${sign.key}:`, e);
-      results[sign.key] = {
-        hindi: sign.hindi,
-        general: "उपलब्ध नहीं", love: "उपलब्ध नहीं", career: "उपलब्ध नहीं", health: "उपलब्ध नहीं"
-      };
+      results[sign.key] = { hindi: sign.hindi, general: "उपलब्ध नहीं" };
     }
   }
   return results;
@@ -259,10 +267,10 @@ export default async function handler(req, res){
 
     await saveToFirestore(panchang, shlok, horoscopes);
 
-    res.status(200).json({ success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length, debug_aries: horoscopes.aries || null, debug_raw: global.__debugRawAries || null });
+    res.status(200).json({ success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length });
   }catch(e){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message });
   }
-}
-
+  }
+  
