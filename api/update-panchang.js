@@ -10,7 +10,6 @@ const PROKERALA_CLIENT_ID = process.env.PROKERALA_CLIENT_ID;
 const PROKERALA_CLIENT_SECRET = process.env.PROKERALA_CLIENT_SECRET;
 const FIREBASE_PROJECT_ID = "harsh-sharma-dc962";
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // Ujjain coordinates (Simhastha/Mahakal city — appropriate default location)
 const UJJAIN_COORDINATES = "23.1765,75.7885";
@@ -106,7 +105,7 @@ async function getPanchang(token){
   const now = new Date();
   const isoDateTime = now.toISOString();
 
-  const url = `https://api.prokerala.com/v2/astrology/panchang?ayanamsa=1&coordinates=${UJJAIN_COORDINATES}&datetime=${encodeURIComponent(isoDateTime)}&la=hi`;
+  const url = `https://api.prokerala.com/v2/astrology/panchang?ayanamsa=1&coordinates=${UJJAIN_COORDINATES}&datetime=${encodeURIComponent(isoDateTime)}`;
 
   const res = await fetch(url, {
     headers: { "Authorization": `Bearer ${token}` }
@@ -116,55 +115,25 @@ async function getPanchang(token){
   return data.data;
 }
 
-async function getHoroscopeForSign(token, signKey){
-  const url = `https://api.prokerala.com/v2/horoscope/daily?datetime=${encodeURIComponent(new Date().toISOString())}&sign=${signKey}&type=general`;
-
-  const res = await fetch(url, {
-    headers: { "Authorization": `Bearer ${token}` }
-  });
+async function getHoroscopeForSign(signKey){
+  const url = `https://freehoroscopeapi.com/api/v1/get-horoscope/daily?sign=${signKey}`;
+  const res = await fetch(url);
   const data = await res.json();
-  if (data.errors){
-    console.error(`Horoscope error for ${signKey}:`, JSON.stringify(data.errors));
-    return null;
-  }
-  return data.data?.daily_prediction?.prediction || null;
+  return data?.data?.horoscope || null;
 }
 
-async function translateToHindi(englishText){
-  if (!GEMINI_API_KEY || !englishText) return englishText;
-  try{
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `इस अंग्रेज़ी राशिफल को सरल, स्वाभाविक हिंदी में अनुवाद करें। केवल अनुवाद दें, कोई अतिरिक्त टिप्पणी नहीं:\n\n${englishText}` }] }]
-        })
-      }
-    );
-    const data = await res.json();
-    const translated = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-    return translated || englishText;
-  }catch(e){
-    console.error("Translation error:", e);
-    return englishText;
-  }
-}
-
-async function getAllHoroscopes(token){
+async function getAllHoroscopes(){
   const results = {};
   for (const sign of ZODIAC_SIGNS){
     try{
-      const prediction = await getHoroscopeForSign(token, sign.key);
-      const hindiPrediction = prediction ? await translateToHindi(prediction) : "उपलब्ध नहीं";
+      const prediction = await getHoroscopeForSign(sign.key);
       results[sign.key] = {
         hindi: sign.hindi,
-        general: hindiPrediction
+        general: prediction || "Not available today."
       };
     }catch(e){
       console.error(`Failed to fetch horoscope for ${sign.key}:`, e);
-      results[sign.key] = { hindi: sign.hindi, general: "उपलब्ध नहीं" };
+      results[sign.key] = { hindi: sign.hindi, general: "Not available today." };
     }
   }
   return results;
@@ -263,7 +232,7 @@ export default async function handler(req, res){
     const panchangData = await getPanchang(token);
     const panchang = formatPanchang(panchangData);
     const shlok = getTodayShlok();
-    const horoscopes = await getAllHoroscopes(token);
+    const horoscopes = await getAllHoroscopes();
 
     await saveToFirestore(panchang, shlok, horoscopes);
 
@@ -272,5 +241,5 @@ export default async function handler(req, res){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message });
   }
-  }
-  
+    }
+    
