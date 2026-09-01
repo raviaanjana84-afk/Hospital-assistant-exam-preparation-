@@ -112,6 +112,74 @@ async function loadDailyContent(){
 
 document.addEventListener("DOMContentLoaded", loadDailyContent);
 
+// ---------- Rashifal (personalized horoscope) ----------
+const RASHI_HINDI_NAMES = {
+  aries:"मेष", taurus:"वृषभ", gemini:"मिथुन", cancer:"कर्क", leo:"सिंह", virgo:"कन्या",
+  libra:"तुला", scorpio:"वृश्चिक", sagittarius:"धनु", capricorn:"मकर", aquarius:"कुंभ", pisces:"मीन"
+};
+
+let horoscopeData = null;
+
+async function loadHoroscopeData(){
+  try{
+    const snap = await getDoc(doc(db, "content", "today"));
+    if (snap.exists() && snap.data().horoscopes){
+      horoscopeData = JSON.parse(snap.data().horoscopes);
+    }
+  }catch(e){
+    console.error("Horoscope load error:", e);
+  }
+  initRashiUI();
+}
+
+function initRashiUI(){
+  const savedRashi = localStorage.getItem("user_rashi");
+  const selectView = document.getElementById("rashiSelectView");
+  const displayView = document.getElementById("rashiDisplayView");
+
+  if (savedRashi && RASHI_HINDI_NAMES[savedRashi]){
+    selectView.style.display = "none";
+    displayView.style.display = "block";
+    document.getElementById("rashiName").innerText = RASHI_HINDI_NAMES[savedRashi];
+    showRashiText(savedRashi, "general");
+  } else {
+    selectView.style.display = "block";
+    displayView.style.display = "none";
+  }
+}
+
+function showRashiText(rashiKey, type){
+  const textEl = document.getElementById("rashiText");
+  if (horoscopeData && horoscopeData[rashiKey]){
+    textEl.innerText = horoscopeData[rashiKey][type] || "आज इस श्रेणी में जानकारी उपलब्ध नहीं है।";
+  } else {
+    textEl.innerText = "जल्द उपलब्ध होगा।";
+  }
+}
+
+document.getElementById("rashiConfirmBtn").addEventListener("click", () => {
+  const val = document.getElementById("rashiSelect").value;
+  if (!val) return;
+  localStorage.setItem("user_rashi", val);
+  initRashiUI();
+});
+
+document.getElementById("rashiChangeBtn").addEventListener("click", () => {
+  localStorage.removeItem("user_rashi");
+  initRashiUI();
+});
+
+document.querySelectorAll(".rashi-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".rashi-tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    const savedRashi = localStorage.getItem("user_rashi");
+    if (savedRashi) showRashiText(savedRashi, tab.dataset.type);
+  });
+});
+
+document.addEventListener("DOMContentLoaded", loadHoroscopeData);
+
 // ---------- PWA install ----------
 let deferredPrompt;
 const installBanner = document.getElementById("installBanner");
@@ -145,4 +213,4 @@ if ("serviceWorker" in navigator) {
 
 // Expose for other modules
 window.__handleRoute = handleRoute;
-  
+    
