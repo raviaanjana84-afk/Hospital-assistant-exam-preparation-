@@ -126,6 +126,9 @@ async function getHoroscopeForSign(token, signKey){
     console.error(`Horoscope error for ${signKey}:`, JSON.stringify(data.errors));
     return null;
   }
+  if (signKey === "aries" && global.__debugRawAries === undefined){
+    global.__debugRawAries = data;
+  }
   return data.data;
 }
 
@@ -256,9 +259,10 @@ export default async function handler(req, res){
 
     await saveToFirestore(panchang, shlok, horoscopes);
 
-    res.status(200).json({ success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length, debug_aries: horoscopes.aries || null });
+    res.status(200).json({ success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length, debug_aries: horoscopes.aries || null, debug_raw: global.__debugRawAries || null });
   }catch(e){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message });
   }
 }
+
