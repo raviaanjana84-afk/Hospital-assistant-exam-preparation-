@@ -244,10 +244,16 @@ export default async function handler(req, res){
 
     await saveToFirestore(panchang, shlok, horoscopes);
 
-    res.status(200).json({ success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length });
+    const debugPanchang = new MhahPanchang();
+    const debugRaw = debugPanchang.calculate(new Date());
+
+    res.status(200).json({
+      success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length,
+      debug_raw: debugRaw
+    });
   }catch(e){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message });
   }
-}
-  
+    }
+        
