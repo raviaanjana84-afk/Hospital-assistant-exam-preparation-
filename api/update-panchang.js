@@ -135,6 +135,8 @@ async function generateCategoryBreakdown(generalText, hindiName){
   }
 }
 
+function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
+
 async function getAllHoroscopes(){
   const results = {};
   for (const sign of ZODIAC_SIGNS){
@@ -158,6 +160,8 @@ async function getAllHoroscopes(){
         career: "आज उपलब्ध नहीं है।", health: "आज उपलब्ध नहीं है।", money: "आज उपलब्ध नहीं है।"
       };
     }
+    // Gemini free tier: 20 requests/minute — 3 second wait rakhte hain taaki safe rahe
+    await sleep(3000);
   }
   return results;
 }
@@ -203,22 +207,12 @@ export default async function handler(req, res){
 
     await saveToFirestore(panchang, shlok, horoscopes);
 
-    const debugPanchang = new MhahPanchang();
-    const debugRaw = debugPanchang.calculate(new Date());
-
-    const debugGeneral = await getGeneralHoroscope("cancer");
-    const debugBreakdown = await generateCategoryBreakdown(debugGeneral, "कर्क");
-
     res.status(200).json({
       success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length,
-      debug_raw: debugRaw,
-      debug_horoscope_cancer: horoscopes.cancer || null,
-      debug_general_text: debugGeneral,
-      debug_breakdown_result: debugBreakdown
+      debug_cancer: horoscopes.cancer || null
     });
   }catch(e){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message, stack: e.stack });
   }
-}
-  
+                                               }
