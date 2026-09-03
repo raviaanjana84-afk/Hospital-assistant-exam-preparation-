@@ -111,7 +111,7 @@ async function generateCategoryBreakdown(generalText, hindiName){
     const prompt = `यह आज का सामान्य राशिफल है (${hindiName} राशि के लिए):\n"${generalText}"\n\nइसी के आधार पर हिंदी में इन 5 श्रेणियों के लिए 1-2 वाक्य का संक्षिप्त राशिफल बनाएं। केवल यह JSON प्रारूप दें, कोई अतिरिक्त टेक्स्ट नहीं:\n{"general":"...","love":"...","career":"...","health":"...","money":"..."}`;
 
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -221,3 +221,4 @@ export default async function handler(req, res){
     res.status(500).json({ success: false, error: e.message, stack: e.stack });
   }
 }
+  
