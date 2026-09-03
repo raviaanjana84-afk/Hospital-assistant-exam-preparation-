@@ -106,7 +106,7 @@ async function getGeneralHoroscope(signKey){
 }
 
 async function generateCategoryBreakdown(generalText, hindiName){
-  if (!GEMINI_API_KEY || !generalText) return null;
+  if (!GEMINI_API_KEY || !generalText) return { __debug_reason: !GEMINI_API_KEY ? "no_api_key" : "no_general_text" };
   try{
     const prompt = `यह आज का सामान्य राशिफल है (${hindiName} राशि के लिए):\n"${generalText}"\n\nइसी के आधार पर हिंदी में इन 5 श्रेणियों के लिए 1-2 वाक्य का संक्षिप्त राशिफल बनाएं। केवल यह JSON प्रारूप दें, कोई अतिरिक्त टेक्स्ट नहीं:\n{"general":"...","love":"...","career":"...","health":"...","money":"..."}`;
 
@@ -119,12 +119,19 @@ async function generateCategoryBreakdown(generalText, hindiName){
       }
     );
     const data = await res.json();
+    if (data?.error) return { __debug_reason: "gemini_error", __debug_detail: JSON.stringify(data.error) };
+
     let text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+    if (!text) return { __debug_reason: "empty_gemini_text", __debug_detail: JSON.stringify(data) };
+
     text = text.replace(/```json|```/g, "").trim();
-    return JSON.parse(text);
+    try{
+      return JSON.parse(text);
+    }catch(parseErr){
+      return { __debug_reason: "json_parse_failed", __debug_detail: text.slice(0, 300) };
+    }
   }catch(e){
-    console.error("Gemini breakdown error:", e);
-    return null;
+    return { __debug_reason: "fetch_exception", __debug_detail: e.message };
   }
 }
 
@@ -199,14 +206,18 @@ export default async function handler(req, res){
     const debugPanchang = new MhahPanchang();
     const debugRaw = debugPanchang.calculate(new Date());
 
+    const debugGeneral = await getGeneralHoroscope("cancer");
+    const debugBreakdown = await generateCategoryBreakdown(debugGeneral, "कर्क");
+
     res.status(200).json({
       success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length,
       debug_raw: debugRaw,
-      debug_horoscope_cancer: horoscopes.cancer || null
+      debug_horoscope_cancer: horoscopes.cancer || null,
+      debug_general_text: debugGeneral,
+      debug_breakdown_result: debugBreakdown
     });
   }catch(e){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message, stack: e.stack });
   }
-        }
-    
+}
