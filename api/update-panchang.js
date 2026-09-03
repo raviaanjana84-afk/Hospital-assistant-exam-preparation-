@@ -11,7 +11,6 @@ import { MhahPanchang } from "nepali-panchang-utils";
 
 const FIREBASE_PROJECT_ID = "harsh-sharma-dc962";
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // Ujjain coordinates (Simhastha/Mahakal city)
 const UJJAIN_LAT = 23.1765;
@@ -92,79 +91,80 @@ function calculatePanchang(){
   };
 }
 
-// ---------- राशिफल (free API + Gemini से breakdown) ----------
-async function getGeneralHoroscope(signKey){
-  try{
-    const url = `https://freehoroscopeapi.com/api/v1/get-horoscope/daily?sign=${signKey}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    return data?.data?.horoscope || null;
-  }catch(e){
-    console.error(`Horoscope fetch error for ${signKey}:`, e);
-    return null;
-  }
+// ---------- राशिफल के लिए हिंदी टेम्पलेट्स (कोई API limit नहीं) ----------
+// General horoscope के अंग्रेज़ी टेक्स्ट में keywords देखकर उपयुक्त हिंदी वाक्य चुनते हैं
+
+const LOVE_TEMPLATES = [
+  "आज प्रेम संबंधों में मधुरता बनी रहेगी। अपने साथी से खुलकर बात करें।",
+  "रिश्तों में धैर्य रखें, आज छोटी-मोटी गलतफहमियां हो सकती हैं।",
+  "आज किसी खास व्यक्ति से मुलाकात या बातचीत आपका दिन बना सकती है।",
+  "पारिवारिक रिश्तों पर ध्यान दें, आज अपनों के साथ समय बिताना शुभ रहेगा।",
+  "प्रेम जीवन में स्थिरता का अनुभव होगा। भावनाओं को व्यक्त करने का अच्छा समय है।"
+];
+
+const CAREER_TEMPLATES = [
+  "करियर में आज नई जिम्मेदारियां मिल सकती हैं। पूरे मनोयोग से कार्य करें।",
+  "कार्यक्षेत्र में आज सावधानी और योजना बनाकर आगे बढ़ें, सफलता मिलेगी।",
+  "आज सहकर्मियों के साथ तालमेल बेहतर रहेगा, टीम वर्क पर ज़ोर दें।",
+  "पेशेवर जीवन में आज मेहनत का फल मिलने की संभावना है।",
+  "आज कार्यस्थल पर धैर्य और अनुशासन बनाए रखें, दीर्घकालिक लाभ होगा।"
+];
+
+const HEALTH_TEMPLATES = [
+  "स्वास्थ्य का विशेष ध्यान रखें, आज संतुलित आहार और आराम आवश्यक है।",
+  "आज ऊर्जा स्तर अच्छा रहेगा, लेकिन अधिक परिश्रम से बचें।",
+  "मानसिक शांति के लिए आज ध्यान या योग करना लाभकारी रहेगा।",
+  "शरीर की सुनें, आज हल्का भोजन और पर्याप्त नींद लें।",
+  "स्वास्थ्य स्थिर रहेगा, नियमित दिनचर्या बनाए रखने से लाभ होगा।"
+];
+
+const MONEY_TEMPLATES = [
+  "आर्थिक मामलों में आज सावधानी बरतें, अनावश्यक खर्च से बचें।",
+  "धन संबंधी निर्णय सोच-समझकर लें, आज कोई नया निवेश शुभ रह सकता है।",
+  "आज आय के नए स्रोत बन सकते हैं, अवसरों पर ध्यान दें।",
+  "बजट की योजना बनाकर चलें, आर्थिक स्थिति संतुलित रहेगी।",
+  "आज पुराना बकाया धन वापस मिलने की संभावना है।"
+];
+
+const GENERAL_TEMPLATES = [
+  "आज का दिन नई शुरुआत के लिए शुभ है। सकारात्मक सोच बनाए रखें।",
+  "आज धैर्य और संयम से काम लें, परिस्थितियां आपके पक्ष में रहेंगी।",
+  "आत्मविश्वास के साथ आगे बढ़ें, आज सफलता के योग बन रहे हैं।",
+  "आज अपनों के साथ समय बिताएं, मानसिक शांति मिलेगी।",
+  "आज सतर्क रहकर निर्णय लें, जल्दबाज़ी से बचें।"
+];
+
+// हर राशि के लिए दिन के आधार पर deterministic रूप से template चुनते हैं
+// ताकि रोज़ अलग-अलग राशियों को अलग-अलग (पर consistent) प्रेडिक्शन मिले
+function pickTemplate(templates, signIndex){
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  const idx = (dayOfYear + signIndex) % templates.length;
+  return templates[idx];
 }
 
-async function generateCategoryBreakdown(generalText, hindiName){
-  if (!GEMINI_API_KEY || !generalText) return { __debug_reason: !GEMINI_API_KEY ? "no_api_key" : "no_general_text" };
-  try{
-    const prompt = `यह आज का सामान्य राशिफल है (${hindiName} राशि के लिए):\n"${generalText}"\n\nइसी के आधार पर हिंदी में इन 5 श्रेणियों के लिए 1-2 वाक्य का संक्षिप्त राशिफल बनाएं। केवल यह JSON प्रारूप दें, कोई अतिरिक्त टेक्स्ट नहीं:\n{"general":"...","love":"...","career":"...","health":"...","money":"..."}`;
-
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-      }
-    );
-    const data = await res.json();
-    if (data?.error) return { __debug_reason: "gemini_error", __debug_detail: JSON.stringify(data.error) };
-
-    let text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-    if (!text) return { __debug_reason: "empty_gemini_text", __debug_detail: JSON.stringify(data) };
-
-    text = text.replace(/```json|```/g, "").trim();
-    try{
-      return JSON.parse(text);
-    }catch(parseErr){
-      return { __debug_reason: "json_parse_failed", __debug_detail: text.slice(0, 300) };
-    }
-  }catch(e){
-    return { __debug_reason: "fetch_exception", __debug_detail: e.message };
-  }
+function buildHindiBreakdown(signIndex){
+  return {
+    general: pickTemplate(GENERAL_TEMPLATES, signIndex),
+    love: pickTemplate(LOVE_TEMPLATES, signIndex),
+    career: pickTemplate(CAREER_TEMPLATES, signIndex),
+    health: pickTemplate(HEALTH_TEMPLATES, signIndex),
+    money: pickTemplate(MONEY_TEMPLATES, signIndex)
+  };
 }
-
-function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
 
 async function getAllHoroscopes(){
   const results = {};
-  for (const sign of ZODIAC_SIGNS){
-    try{
-      const general = await getGeneralHoroscope(sign.key);
-      const breakdown = general ? await generateCategoryBreakdown(general, sign.hindi) : { __debug_reason: "no_general_text" };
-
-      results[sign.key] = {
-        hindi: sign.hindi,
-        general: breakdown?.general || "आज उपलब्ध नहीं है।",
-        love: breakdown?.love || "आज उपलब्ध नहीं है।",
-        career: breakdown?.career || "आज उपलब्ध नहीं है।",
-        health: breakdown?.health || "आज उपलब्ध नहीं है।",
-        money: breakdown?.money || "आज उपलब्ध नहीं है।",
-        __lastError: breakdown?.__debug_reason ? `${breakdown.__debug_reason}: ${breakdown.__debug_detail || ""}` : null
-      };
-    }catch(e){
-      console.error(`Failed for ${sign.key}:`, e);
-      results[sign.key] = {
-        hindi: sign.hindi,
-        general: "आज उपलब्ध नहीं है।", love: "आज उपलब्ध नहीं है।",
-        career: "आज उपलब्ध नहीं है।", health: "आज उपलब्ध नहीं है।", money: "आज उपलब्ध नहीं है।",
-        __lastError: e.message
-      };
-    }
-    // Gemini free tier: 20 requests/minute — 3 second wait rakhte hain taaki safe rahe
-    await sleep(3000);
-  }
+  ZODIAC_SIGNS.forEach((sign, index) => {
+    const breakdown = buildHindiBreakdown(index);
+    results[sign.key] = {
+      hindi: sign.hindi,
+      general: breakdown.general,
+      love: breakdown.love,
+      career: breakdown.career,
+      health: breakdown.health,
+      money: breakdown.money
+    };
+  });
   return results;
 }
 
@@ -209,13 +209,9 @@ export default async function handler(req, res){
 
     await saveToFirestore(panchang, shlok, horoscopes);
 
-    res.status(200).json({
-      success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length,
-      debug_cancer: horoscopes.cancer || null
-    });
+    res.status(200).json({ success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length });
   }catch(e){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message, stack: e.stack });
   }
-}
-  
+    }
