@@ -54,12 +54,62 @@ function getTodayShlok(){
 // ---------- पंचांग (local calculation, कोई API limit नहीं) ----------
 // पुष्टि किया गया structure: result.Day.name, result.Tithi.name, result.Paksha.name,
 // result.Nakshatra.name, result.Yoga.name, result.Karna.name — ये सभी पहले से हिंदी में हैं!
+const VAAR_MAP = {
+  "आइतबार":"रविवार", "सोमबार":"सोमवार", "मङ्गलबार":"मंगलवार", "मंगलबार":"मंगलवार",
+  "बुधबार":"बुधवार", "बिहिबार":"गुरुवार", "शुक्रबार":"शुक्रवार", "शनिबार":"शनिवार"
+};
+function mapVaarToHindi(name){ return VAAR_MAP[name] || name; }
+
+// सूर्योदय/सूर्यास्त की गणना (standard astronomical formula, कोई library dependency नहीं)
+function calculateSunTimes(date, lat, lng){
+  const rad = Math.PI / 180;
+  const deg = 180 / Math.PI;
+
+  // Day of year (1-366)
+  const start = new Date(date.getFullYear(), 0, 1);
+  const dayOfYear = Math.floor((date - start) / 86400000) + 1;
+
+  // Solar declination (degrees)
+  const declination = 23.45 * Math.sin(rad * 360 * (284 + dayOfYear) / 365);
+
+  const latRad = lat * rad;
+  const declRad = declination * rad;
+
+  const cosHourAngle = -Math.tan(latRad) * Math.tan(declRad);
+  if (cosHourAngle > 1 || cosHourAngle < -1) return null; // polar day/night, N/A for India
+
+  const hourAngleDeg = Math.acos(cosHourAngle) * deg;
+
+  // Equation of time (minutes) — standard approximation
+  const B = rad * 360 * (dayOfYear - 81) / 365;
+  const eqTime = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+
+  const timezoneOffset = 5.5; // IST (UTC+5:30)
+  const solarNoon = 12 - (eqTime / 60) - (lng / 15) + timezoneOffset;
+
+  const sunriseHour = solarNoon - hourAngleDeg / 15;
+  const sunsetHour = solarNoon + hourAngleDeg / 15;
+
+  function hourToTimeStr(h){
+    let hh = Math.floor(h);
+    let mm = Math.round((h - hh) * 60);
+    if (mm === 60){ mm = 0; hh += 1; }
+    hh = ((hh % 24) + 24) % 24;
+    const period = hh >= 12 ? "pm" : "am";
+    let displayHour = hh % 12;
+    if (displayHour === 0) displayHour = 12;
+    return `${displayHour}:${String(mm).padStart(2,"0")} ${period}`;
+  }
+
+  return { sunrise: hourToTimeStr(sunriseHour), sunset: hourToTimeStr(sunsetHour) };
+}
+
 function calculatePanchang(){
   const panchang = new MhahPanchang();
   const now = new Date();
   const result = panchang.calculate(now);
 
-  const vaar = result?.Day?.name || "उपलब्ध नहीं";
+  const vaar = mapVaarToHindi(result?.Day?.name || "उपलब्ध नहीं");
   const tithiName = result?.Tithi?.name || "";
   const pakshaName = result?.Paksha?.name || "";
   const nakshatra = result?.Nakshatra?.name || "उपलब्ध नहीं";
@@ -68,14 +118,10 @@ function calculatePanchang(){
 
   let sunriseText = "उपलब्ध नहीं", sunsetText = "उपलब्ध नहीं";
   try{
-    const cal = panchang.calendar(now, UJJAIN_LAT, UJJAIN_LNG);
-    const sunriseRaw = cal?.SunRise || cal?.Sunrise || cal?.sunrise;
-    const sunsetRaw = cal?.SunSet || cal?.Sunset || cal?.sunset;
-    if (sunriseRaw){
-      sunriseText = new Date(sunriseRaw).toLocaleTimeString('hi-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' });
-    }
-    if (sunsetRaw){
-      sunsetText = new Date(sunsetRaw).toLocaleTimeString('hi-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' });
+    const sunTimes = calculateSunTimes(now, UJJAIN_LAT, UJJAIN_LNG);
+    if (sunTimes){
+      sunriseText = sunTimes.sunrise;
+      sunsetText = sunTimes.sunset;
     }
   }catch(e){
     console.error("Sunrise/sunset calculation error:", e);
@@ -214,4 +260,4 @@ export default async function handler(req, res){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message, stack: e.stack });
   }
-    }
+}
