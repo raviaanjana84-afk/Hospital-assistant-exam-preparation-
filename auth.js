@@ -8,7 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const ADMIN_EMAILS = ["acharyaharsh@example.com"]; // TODO: apna admin email yahan daalo
+const ADMIN_EMAILS = ["raviaanjana84@gmail.com"]; // TODO: apna admin email yahan daalo
 
 let currentUserData = null;
 window.__currentUserData = () => currentUserData;
