@@ -142,7 +142,7 @@ async function getAllHoroscopes(){
   for (const sign of ZODIAC_SIGNS){
     try{
       const general = await getGeneralHoroscope(sign.key);
-      const breakdown = general ? await generateCategoryBreakdown(general, sign.hindi) : null;
+      const breakdown = general ? await generateCategoryBreakdown(general, sign.hindi) : { __debug_reason: "no_general_text" };
 
       results[sign.key] = {
         hindi: sign.hindi,
@@ -150,14 +150,16 @@ async function getAllHoroscopes(){
         love: breakdown?.love || "आज उपलब्ध नहीं है।",
         career: breakdown?.career || "आज उपलब्ध नहीं है।",
         health: breakdown?.health || "आज उपलब्ध नहीं है।",
-        money: breakdown?.money || "आज उपलब्ध नहीं है।"
+        money: breakdown?.money || "आज उपलब्ध नहीं है।",
+        __lastError: breakdown?.__debug_reason ? `${breakdown.__debug_reason}: ${breakdown.__debug_detail || ""}` : null
       };
     }catch(e){
       console.error(`Failed for ${sign.key}:`, e);
       results[sign.key] = {
         hindi: sign.hindi,
         general: "आज उपलब्ध नहीं है।", love: "आज उपलब्ध नहीं है।",
-        career: "आज उपलब्ध नहीं है।", health: "आज उपलब्ध नहीं है।", money: "आज उपलब्ध नहीं है।"
+        career: "आज उपलब्ध नहीं है।", health: "आज उपलब्ध नहीं है।", money: "आज उपलब्ध नहीं है।",
+        __lastError: e.message
       };
     }
     // Gemini free tier: 20 requests/minute — 3 second wait rakhte hain taaki safe rahe
@@ -215,5 +217,5 @@ export default async function handler(req, res){
     console.error("Panchang update failed:", e);
     res.status(500).json({ success: false, error: e.message, stack: e.stack });
   }
-      }
-      
+}
+  
