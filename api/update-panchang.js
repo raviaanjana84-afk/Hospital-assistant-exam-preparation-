@@ -1,186 +1,263 @@
 // ==========================================
-// PUJAN — real sevayein (Acharya ji se) + booking
+// VERCEL SERVERLESS FUNCTION
+// Roz automatically Panchang (local calculation, koi limit nahi) aur
+// Raashifal (free horoscope API + Gemini se Love/Career/Health/Money)
+// Firestore me save karta hai (content/today document).
+//
+// Ye function Vercel Cron ke through roz subah automatically chalega.
 // ==========================================
-import { auth } from "./config.js";
-import { createBooking } from "./booking.js";
 
-const PUJAN_DATA = {
-  mangal_dosh: {
-    title: "मंगल दोष निवारण पूजन",
-    price: 3100,
-    templeReceipt: 350,
-    desc: "कुंडली में मंगल दोष से निवारण के लिए मंगलनाथ मंदिर, उज्जैन में मंगल भात किया जाता है, जिसमें चावल और दही से मिश्रित भात चढ़ाया जाता है।"
-  },
-  kalsarp: {
-    title: "कालसर्प पूजन",
-    price: 5100,
-    templeReceipt: 500,
-    desc: "कालसर्प दोष से निवारण हेतु नवकुल चांदी के नाग-नागिन का पूजन किया जाता है, पश्चात विसर्जन किया जाता है।"
-  },
-  arka_vivah: {
-    title: "अर्क विवाह",
-    price: 5100,
-    templeReceipt: 500,
-    desc: "जिस लड़के की कुंडली में दो विवाह का योग होता है, उसके निवारण के लिए अर्क विवाह किया जाता है।"
-  },
-  kumbh_vivah: {
-    title: "कुंभ विवाह",
-    price: 5100,
-    templeReceipt: 500,
-    desc: "जिस लड़की की कुंडली में दो विवाह का योग होता है, उसके निवारण के लिए कुंभ विवाह किया जाता है।"
-  },
-  navgrah_shanti: {
-    title: "नवग्रह शांति पूजन",
-    price: 3100,
-    templeReceipt: 350,
-    desc: "कुंडली में नवग्रह का अशुभ प्रभाव कम करने के लिए नवग्रह शांति पूजन किया जाता है।"
-  },
-  pitru_dosh: {
-    title: "पितृ दोष शांति पूजन (पिंडदान)",
-    priceRange: "2,100 - 5,100",
-    price: 2100,
-    desc: "पितृ दोष से निवारण हेतु पिंडदान किया जाता है — नारायण बलि, नाग बलि के रूप में। शुल्क कार्य के अनुसार ₹2,100 से ₹5,100 के बीच रहता है।"
-  },
-  vastu_pujan: {
-    title: "वास्तु पूजन",
-    desc: "नवीन गृह प्रवेश या वास्तु दोष निवारण हेतु वास्तु पूजन किया जाता है। अवधि अनुसार शुल्क:",
-    tiers: [
-      { label: "1 दिवसीय अनुष्ठान", price: 11000 },
-      { label: "2 दिवसीय अनुष्ठान", price: 15000 },
-      { label: "3 दिवसीय अनुष्ठान", price: 21000 }
-    ]
-  },
-  bhagwat_path: {
-    title: "भागवत मूल पाठ (पितृ दोष शांति हेतु)",
-    price: 35000,
-    desc: "पितृ दोष शांति के लिए 7 दिवसीय भागवत मूल पाठ अनुष्ठान किया जाता है, जिससे पितृ दोष से शांति मिलती है।"
-  }
-};
+import { MhahPanchang } from "nepali-panchang-utils";
 
-window.renderPujanMenu = () => {
-  let cards = Object.keys(PUJAN_DATA).map(key => {
-    const s = PUJAN_DATA[key];
-    let priceDisplay = "";
-    if (s.tiers){
-      priceDisplay = `<span class="seva-price">₹${s.tiers[0].price.toLocaleString('en-IN')} से शुरू</span>`;
-    } else if (s.priceRange){
-      priceDisplay = `<span class="seva-price">₹${s.priceRange}</span>`;
-    } else {
-      priceDisplay = `<span class="seva-price">₹${s.price.toLocaleString('en-IN')}</span>`;
-    }
-    return `
-      <div class="seva-card" data-key="${key}">
-        <h3>${s.title}</h3>
-        <p>${s.desc}</p>
-        ${priceDisplay}
-      </div>`;
-  }).join("");
+const FIREBASE_PROJECT_ID = "harsh-sharma-dc962";
+const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
 
-  window.showOverlay(`
-    <h2 class="ov-title"><i class="fa-solid fa-hands-praying"></i> पूजन विभाग</h2>
-    <p style="color:var(--ink-soft); font-size:13px; margin-bottom:16px;">आचार्य हर्ष शर्मा द्वारा विधि-विधान से संपन्न</p>
-    ${cards}
-  `);
+// Ujjain coordinates (Simhastha/Mahakal city)
+const UJJAIN_LAT = 23.1765;
+const UJJAIN_LNG = 75.7885;
 
-  document.querySelectorAll("#overlay-content .seva-card").forEach(card => {
-    card.addEventListener("click", () => renderPujanDetail(card.dataset.key));
-  });
-};
+// 12 राशियाँ (zodiac signs) — free horoscope API keys aur Hindi names
+const ZODIAC_SIGNS = [
+  { key: "aries", hindi: "मेष" },
+  { key: "taurus", hindi: "वृषभ" },
+  { key: "gemini", hindi: "मिथुन" },
+  { key: "cancer", hindi: "कर्क" },
+  { key: "leo", hindi: "सिंह" },
+  { key: "virgo", hindi: "कन्या" },
+  { key: "libra", hindi: "तुला" },
+  { key: "scorpio", hindi: "वृश्चिक" },
+  { key: "sagittarius", hindi: "धनु" },
+  { key: "capricorn", hindi: "मकर" },
+  { key: "aquarius", hindi: "कुंभ" },
+  { key: "pisces", hindi: "मीन" }
+];
 
-function renderPujanDetail(key){
-  const s = PUJAN_DATA[key];
-  const user = auth.currentUser;
+// रोज़ बदलने वाले श्लोकों की सूची
+const SHLOK_LIST = [
+  "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन। मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥ — गीता 2.47",
+  "योगस्थः कुरु कर्माणि सङ्गं त्यक्त्वा धनञ्जय। सिद्ध्यसिद्ध्योः समो भूत्वा समत्वं योग उच्यते॥ — गीता 2.48",
+  "वसुधैव कुटुम्बकम्। — महोपनिषद्",
+  "सत्यमेव जयते नानृतं सत्येन पन्था विततो देवयानः। — मुण्डक उपनिषद्",
+  "अहिंसा परमो धर्मः धर्म हिंसा तथैव च। — महाभारत",
+  "यत्र नार्यस्तु पूज्यन्ते रमन्ते तत्र देवताः। — मनुस्मृति",
+  "उद्यमेन हि सिध्यन्ति कार्याणि न मनोरथैः। — पंचतंत्र",
+  "श्रद्धावान् लभते ज्ञानं तत्परः संयतेन्द्रियः। — गीता 4.39",
+  "अन्नदाता सुखी भव। — पारंपरिक आशीर्वाद",
+  "सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः। — पारंपरिक श्लोक"
+];
 
-  let priceSection = "";
-  if (s.tiers){
-    priceSection = s.tiers.map(t => `
-      <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--cream-warm);">
-        <span style="font-size:14px;">${t.label}</span>
-        <span class="seva-price">₹${t.price.toLocaleString('en-IN')}</span>
-      </div>
-    `).join("");
-  } else if (s.priceRange){
-    priceSection = `<span class="seva-price" style="display:inline-block; margin-bottom:6px;">₹${s.priceRange}</span>`;
-  } else {
-    priceSection = `<span class="seva-price" style="display:inline-block; margin-bottom:6px;">₹${s.price.toLocaleString('en-IN')}</span>`;
-    if (s.templeReceipt){
-      priceSection += `<p style="margin:4px 0 0; font-size:12px; color:var(--ink-soft);">+ ₹${s.templeReceipt} मंदिर परिसर की रसीद</p>`;
-    }
-  }
-
-  window.showOverlay(`
-    <h2 class="ov-title"><i class="fa-solid fa-hands-praying"></i> ${s.title}</h2>
-    <p style="color:var(--ink-soft); font-size:14px; line-height:1.7; margin-bottom:14px;">${s.desc}</p>
-    <div style="margin-bottom:18px;">${priceSection}</div>
-
-    <button class="btn-primary" id="pujanBookBtn"><i class="fa-brands fa-whatsapp"></i> बुक करें</button>
-    <button class="btn-text" id="pujanBackBtn">← वापस सेवाओं पर जाएं</button>
-  `);
-
-  document.getElementById("pujanBackBtn").addEventListener("click", () => window.renderPujanMenu());
-  document.getElementById("pujanBookBtn").addEventListener("click", () => renderPujanBookingForm(key));
+function getTodayShlok(){
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  return SHLOK_LIST[dayOfYear % SHLOK_LIST.length];
 }
 
-function renderPujanBookingForm(key){
-  const s = PUJAN_DATA[key];
-  const user = auth.currentUser;
+// ---------- पंचांग (local calculation, कोई API limit नहीं) ----------
+// पुष्टि किया गया structure: result.Day.name, result.Tithi.name, result.Paksha.name,
+// result.Nakshatra.name, result.Yoga.name, result.Karna.name — ये सभी पहले से हिंदी में हैं!
+const VAAR_MAP = {
+  "आइतबार":"रविवार", "सोमबार":"सोमवार", "मङ्गलबार":"मंगलवार", "मंगलबार":"मंगलवार",
+  "बुधबार":"बुधवार", "बिहिबार":"गुरुवार", "शुक्रबार":"शुक्रवार", "शनिबार":"शनिवार"
+};
+function mapVaarToHindi(name){ return VAAR_MAP[name] || name; }
 
-  let priceLabel = s.tiers ? `₹${s.tiers[0].price.toLocaleString('en-IN')} से शुरू` :
-                   s.priceRange ? `₹${s.priceRange}` : `₹${s.price.toLocaleString('en-IN')}`;
+// सूर्योदय/सूर्यास्त की गणना (standard astronomical formula, कोई library dependency नहीं)
+function calculateSunTimes(date, lat, lng){
+  const rad = Math.PI / 180;
+  const deg = 180 / Math.PI;
 
-  window.showOverlay(`
-    <h2 class="ov-title"><i class="fa-solid fa-hands-praying"></i> ${s.title}</h2>
-    <p class="seva-price" style="display:block; margin-bottom:18px;">${priceLabel}</p>
+  // Day of year (1-366)
+  const start = new Date(date.getFullYear(), 0, 1);
+  const dayOfYear = Math.floor((date - start) / 86400000) + 1;
 
-    <label class="form-label">आपका नाम</label>
-    <input type="text" id="bkName" class="form-input" value="${user ? (window.__currentUserData()?.name || "") : ""}" placeholder="जैसे: राम शर्मा">
+  // Solar declination (degrees)
+  const declination = 23.45 * Math.sin(rad * 360 * (284 + dayOfYear) / 365);
 
-    <label class="form-label">फ़ोन नंबर</label>
-    <input type="tel" id="bkPhone" class="form-input" placeholder="10 अंकों का मोबाइल नंबर">
+  const latRad = lat * rad;
+  const declRad = declination * rad;
 
-    <label class="form-label">पूजन की तारीख</label>
-    <input type="date" id="bkDate" class="form-input">
+  const cosHourAngle = -Math.tan(latRad) * Math.tan(declRad);
+  if (cosHourAngle > 1 || cosHourAngle < -1) return null; // polar day/night, N/A for India
 
-    ${s.tiers ? `
-    <label class="form-label">अनुष्ठान अवधि चुनें</label>
-    <select id="bkTier" class="form-select">
-      ${s.tiers.map(t => `<option value="${t.label}">${t.label} — ₹${t.price.toLocaleString('en-IN')}</option>`).join("")}
-    </select>
-    ` : ""}
+  const hourAngleDeg = Math.acos(cosHourAngle) * deg;
 
-    <label class="form-label">पता / स्थान</label>
-    <textarea id="bkAddress" class="form-textarea" rows="3" placeholder="पूजन कहाँ करवाना है?"></textarea>
+  // Equation of time (minutes) — standard approximation
+  const B = rad * 360 * (dayOfYear - 81) / 365;
+  const eqTime = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
 
-    <div id="bkError" style="color:#B23A3A; font-size:13px; margin-bottom:10px; display:none;"></div>
-    <button class="btn-primary" id="bkSubmitBtn"><i class="fa-brands fa-whatsapp"></i> बुक करें</button>
-  `);
+  const timezoneOffset = 5.5; // IST (UTC+5:30)
+  const solarNoon = 12 - (eqTime / 60) - (lng / 15) + timezoneOffset;
 
-  document.getElementById("bkSubmitBtn").addEventListener("click", async () => {
-    const name = document.getElementById("bkName").value.trim();
-    const phone = document.getElementById("bkPhone").value.trim();
-    const date = document.getElementById("bkDate").value;
-    const address = document.getElementById("bkAddress").value.trim();
-    const tier = document.getElementById("bkTier")?.value || "";
-    const errBox = document.getElementById("bkError");
+  const sunriseHour = solarNoon - hourAngleDeg / 15;
+  const sunsetHour = solarNoon + hourAngleDeg / 15;
 
-    if (!name || !phone || !date){
-      errBox.innerText = "कृपया नाम, फ़ोन नंबर और तारीख भरें।";
-      errBox.style.display = "block";
-      return;
+  function hourToTimeStr(h){
+    let hh = Math.floor(h);
+    let mm = Math.round((h - hh) * 60);
+    if (mm === 60){ mm = 0; hh += 1; }
+    hh = ((hh % 24) + 24) % 24;
+    const period = hh >= 12 ? "pm" : "am";
+    let displayHour = hh % 12;
+    if (displayHour === 0) displayHour = 12;
+    return `${displayHour}:${String(mm).padStart(2,"0")} ${period}`;
+  }
+
+  return { sunrise: hourToTimeStr(sunriseHour), sunset: hourToTimeStr(sunsetHour) };
+}
+
+function calculatePanchang(){
+  const panchang = new MhahPanchang();
+  const now = new Date();
+  const result = panchang.calculate(now);
+
+  const vaar = mapVaarToHindi(result?.Day?.name || "उपलब्ध नहीं");
+  const tithiName = result?.Tithi?.name || "";
+  const pakshaName = result?.Paksha?.name || "";
+  const nakshatra = result?.Nakshatra?.name || "उपलब्ध नहीं";
+  const yoga = result?.Yoga?.name || "उपलब्ध नहीं";
+  const karana = result?.Karna?.name || "उपलब्ध नहीं";
+
+  let sunriseText = "उपलब्ध नहीं", sunsetText = "उपलब्ध नहीं";
+  try{
+    const sunTimes = calculateSunTimes(now, UJJAIN_LAT, UJJAIN_LNG);
+    if (sunTimes){
+      sunriseText = sunTimes.sunrise;
+      sunsetText = sunTimes.sunset;
     }
-    if (!/^[6-9]\d{9}$/.test(phone)){
-      errBox.innerText = "कृपया सही 10 अंकों का मोबाइल नंबर डालें।";
-      errBox.style.display = "block";
-      return;
-    }
+  }catch(e){
+    console.error("Sunrise/sunset calculation error:", e);
+  }
 
-    await createBooking({
-      seva: "पूजन",
-      sevaTitle: s.title + (tier ? ` (${tier})` : ""),
-      price: s.price || (s.tiers ? s.tiers[0].price : 0),
-      name, phone, date, address
-    });
+  return {
+    vaar,
+    tithi: pakshaName ? `${pakshaName} पक्ष ${tithiName}`.trim() : tithiName,
+    nakshatra,
+    yoga,
+    karana,
+    muhurat: (sunriseText !== "उपलब्ध नहीं") ? `सूर्योदय ${sunriseText} · सूर्यास्त ${sunsetText}` : "उपलब्ध नहीं"
+  };
+}
 
-    window.hideOverlay();
+// ---------- राशिफल के लिए हिंदी टेम्पलेट्स (कोई API limit नहीं) ----------
+// General horoscope के अंग्रेज़ी टेक्स्ट में keywords देखकर उपयुक्त हिंदी वाक्य चुनते हैं
+
+const LOVE_TEMPLATES = [
+  "आज प्रेम संबंधों में मधुरता बनी रहेगी। अपने साथी से खुलकर बात करें।",
+  "रिश्तों में धैर्य रखें, आज छोटी-मोटी गलतफहमियां हो सकती हैं।",
+  "आज किसी खास व्यक्ति से मुलाकात या बातचीत आपका दिन बना सकती है।",
+  "पारिवारिक रिश्तों पर ध्यान दें, आज अपनों के साथ समय बिताना शुभ रहेगा।",
+  "प्रेम जीवन में स्थिरता का अनुभव होगा। भावनाओं को व्यक्त करने का अच्छा समय है।"
+];
+
+const CAREER_TEMPLATES = [
+  "करियर में आज नई जिम्मेदारियां मिल सकती हैं। पूरे मनोयोग से कार्य करें।",
+  "कार्यक्षेत्र में आज सावधानी और योजना बनाकर आगे बढ़ें, सफलता मिलेगी।",
+  "आज सहकर्मियों के साथ तालमेल बेहतर रहेगा, टीम वर्क पर ज़ोर दें।",
+  "पेशेवर जीवन में आज मेहनत का फल मिलने की संभावना है।",
+  "आज कार्यस्थल पर धैर्य और अनुशासन बनाए रखें, दीर्घकालिक लाभ होगा।"
+];
+
+const HEALTH_TEMPLATES = [
+  "स्वास्थ्य का विशेष ध्यान रखें, आज संतुलित आहार और आराम आवश्यक है।",
+  "आज ऊर्जा स्तर अच्छा रहेगा, लेकिन अधिक परिश्रम से बचें।",
+  "मानसिक शांति के लिए आज ध्यान या योग करना लाभकारी रहेगा।",
+  "शरीर की सुनें, आज हल्का भोजन और पर्याप्त नींद लें।",
+  "स्वास्थ्य स्थिर रहेगा, नियमित दिनचर्या बनाए रखने से लाभ होगा।"
+];
+
+const MONEY_TEMPLATES = [
+  "आर्थिक मामलों में आज सावधानी बरतें, अनावश्यक खर्च से बचें।",
+  "धन संबंधी निर्णय सोच-समझकर लें, आज कोई नया निवेश शुभ रह सकता है।",
+  "आज आय के नए स्रोत बन सकते हैं, अवसरों पर ध्यान दें।",
+  "बजट की योजना बनाकर चलें, आर्थिक स्थिति संतुलित रहेगी।",
+  "आज पुराना बकाया धन वापस मिलने की संभावना है।"
+];
+
+const GENERAL_TEMPLATES = [
+  "आज का दिन नई शुरुआत के लिए शुभ है। सकारात्मक सोच बनाए रखें।",
+  "आज धैर्य और संयम से काम लें, परिस्थितियां आपके पक्ष में रहेंगी।",
+  "आत्मविश्वास के साथ आगे बढ़ें, आज सफलता के योग बन रहे हैं।",
+  "आज अपनों के साथ समय बिताएं, मानसिक शांति मिलेगी।",
+  "आज सतर्क रहकर निर्णय लें, जल्दबाज़ी से बचें।"
+];
+
+// हर राशि के लिए दिन के आधार पर deterministic रूप से template चुनते हैं
+// ताकि रोज़ अलग-अलग राशियों को अलग-अलग (पर consistent) प्रेडिक्शन मिले
+function pickTemplate(templates, signIndex){
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  const idx = (dayOfYear + signIndex) % templates.length;
+  return templates[idx];
+}
+
+function buildHindiBreakdown(signIndex){
+  return {
+    general: pickTemplate(GENERAL_TEMPLATES, signIndex),
+    love: pickTemplate(LOVE_TEMPLATES, signIndex),
+    career: pickTemplate(CAREER_TEMPLATES, signIndex),
+    health: pickTemplate(HEALTH_TEMPLATES, signIndex),
+    money: pickTemplate(MONEY_TEMPLATES, signIndex)
+  };
+}
+
+async function getAllHoroscopes(){
+  const results = {};
+  ZODIAC_SIGNS.forEach((sign, index) => {
+    const breakdown = buildHindiBreakdown(index);
+    results[sign.key] = {
+      hindi: sign.hindi,
+      general: breakdown.general,
+      love: breakdown.love,
+      career: breakdown.career,
+      health: breakdown.health,
+      money: breakdown.money
+    };
   });
-        }
+  return results;
+}
+
+// ---------- Firestore सेव ----------
+async function saveToFirestore(panchang, shlok, horoscopes){
+  const fieldPaths = ["tithi","vaar","nakshatra","yoga","karana","muhurat","shlok","horoscopes","updatedAt","source"];
+  const maskParams = fieldPaths.map(f => `updateMask.fieldPaths=${f}`).join("&");
+  const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/content/today?key=${FIREBASE_API_KEY}&${maskParams}`;
+
+  const body = {
+    fields: {
+      tithi: { stringValue: panchang.tithi },
+      vaar: { stringValue: panchang.vaar },
+      nakshatra: { stringValue: panchang.nakshatra },
+      yoga: { stringValue: panchang.yoga },
+      karana: { stringValue: panchang.karana },
+      muhurat: { stringValue: panchang.muhurat },
+      shlok: { stringValue: shlok },
+      horoscopes: { stringValue: JSON.stringify(horoscopes) },
+      updatedAt: { stringValue: new Date().toISOString() },
+      source: { stringValue: "local-calc+free-api" }
+    }
+  };
+
+  const res = await fetch(url, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok){
+    const errText = await res.text();
+    throw new Error("Firestore save error: " + errText);
+  }
+}
+
+export default async function handler(req, res){
+  try{
+    const panchang = calculatePanchang();
+    const shlok = getTodayShlok();
+    const horoscopes = await getAllHoroscopes();
+
+    await saveToFirestore(panchang, shlok, horoscopes);
+
+    res.status(200).json({ success: true, ...panchang, shlok, horoscopeSignsCount: Object.keys(horoscopes).length });
+  }catch(e){
+    console.error("Panchang update failed:", e);
+    res.status(500).json({ success: false, error: e.message, stack: e.stack });
+  }
+}
