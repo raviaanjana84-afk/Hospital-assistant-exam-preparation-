@@ -18,6 +18,29 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <link rel="stylesheet" href="style.css">
+
+<style>
+  /* Extra spacing fixes */
+  .section-title {
+    margin-top: 28px;
+    margin-bottom: 14px;
+  }
+  .section-title:first-of-type {
+    margin-top: 0;
+  }
+  .services-grid {
+    margin-bottom: 6px;
+  }
+  .card {
+    margin-bottom: 18px;
+  }
+  .card:last-of-type {
+    margin-bottom: 0;
+  }
+  .shlok-card {
+    margin-top: 4px;
+  }
+</style>
 </head>
 <body>
 
@@ -97,18 +120,18 @@
     <button class="service-card" data-route="bhaktiAI"><i class="fa-solid fa-sparkles"></i><span>भक्ति AI</span></button>
   </div>
 
-  <!-- ========== 3. VIDEO CARD ========== -->
+  <!-- ========== 3. SHLOK ========== -->
+  <section class="card shlok-card">
+    <p class="section-eyebrow">आज का श्लोक</p>
+    <p class="shlok-text" id="displayShlok">लोड हो रहा है...</p>
+  </section>
+
+  <!-- ========== 4. VIDEO CARD ========== -->
   <section class="card" id="videoCard" style="display:none;">
     <p class="section-eyebrow">आज का सत्संग</p>
     <div class="video-wrap">
       <iframe id="videoPlayer" src="" allowfullscreen title="सत्संग वीडियो"></iframe>
     </div>
-  </section>
-
-  <!-- ========== 4. SHLOK ========== -->
-  <section class="card shlok-card">
-    <p class="section-eyebrow">आज का श्लोक</p>
-    <p class="shlok-text" id="displayShlok">लोड हो रहा है...</p>
   </section>
 
   <!-- ========== 5. RASHIFAL ========== -->
@@ -228,4 +251,4 @@
 <script type="module" src="auth.js"></script>
 <script type="module" src="admin.js"></script>
 </body>
-  </html>
+      </html>
