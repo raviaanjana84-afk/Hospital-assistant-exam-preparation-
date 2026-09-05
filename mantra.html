@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>मंत्र ज्ञान कोश | आचार्य हर्ष शर्मा</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --saffron: #e67e22;
+            --deep: #7b1d1d;
+            --gold: #f0a500;
+            --cream: #fdf6ec;
+            --green: #27ae60;
+            --dark: #1a1a2e;
+            --white: #ffffff;
+            --soft: #f8f0e8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--cream);
+            color: var(--dark);
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--deep) 0%, #c0392b 60%, var(--saffron) 100%);
+            color: white;
+            padding: 20px 20px 35px;
+            text-align: center;
+            position: relative;
+            border-radius: 0 0 30px 30px;
+        }
+        header h1 {
+            font-family: 'Tiro Devanagari Sanskrit', serif;
+            font-size: 22px;
+        }
+        header .home-btn {
+            position: absolute;
+            left: 18px; top: 18px;
+            color: white;
+            font-size: 18px;
+            text-decoration: none;
+            background: rgba(255,255,255,0.15);
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        header .sub {
+            font-size: 12px;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+
+        .container {
+            padding: 0 15px 80px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        /* Search */
+        .search-wrap {
+            margin-top: -20px;
+            background: white;
+            border-radius: 16px;
+            padding: 14px 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        .search-wrap input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            padding: 8px 0;
+            background: transparent;
+        }
+        .search-wrap i {
+            color: var(--saffron);
+            font-size: 18px;
+        }
+
+        /* Category Tabs */
+        .cat-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 16px 0 12px;
+            scrollbar-width: none;
+        }
+        .cat-tabs::-webkit-scrollbar { display: none; }
+        .cat-tab {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1.5px solid #ddd;
+            background: white;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+            color: #666;
+        }
+        .cat-tab.active {
+            background: var(--deep);
+            color: white;
+            border-color: var(--deep);
+        }
+        .cat-tab:hover:not(.active) {
+            border-color: var(--saffron);
+        }
+
+        /* Mantra Card */
+        .mantra-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .mantra-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border-left: 5px solid var(--saffron);
+            transition: 0.25s;
+        }
+        .mantra-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .mantra-card .title {
+            font-family: 'Tiro Devanagari Sanskrit', serif;
+            font-size: 20px;
+            color: var(--deep);
+            font-weight: 700;
+        }
+        .mantra-card .title .en {
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            color: #999;
+            margin-left: 8px;
+        }
+        .mantra-card .devanagari {
+            font-family: 'Tiro Devanagari Sanskrit', serif;
+            font-size: 18px;
+            color: var(--dark);
+            background: var(--soft);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin: 10px 0;
+            line-height: 1.8;
+            text-align: center;
+        }
+        .mantra-card .devanagari .small {
+            font-size: 13px;
+            color: #888;
+            display: block;
+            margin-top: 4px;
+        }
+        .mantra-card .meaning {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.6;
+            padding: 10px 14px;
+            background: #f8f4f0;
+            border-radius: 10px;
+            margin: 8px 0;
+        }
+        .mantra-card .meaning strong {
+            color: var(--deep);
+        }
+        .mantra-card .benefits {
+            font-size: 13px;
+            color: #555;
+            padding: 10px 14px;
+            background: #eef7ee;
+            border-radius: 10px;
+            margin: 8px 0;
+        }
+        .mantra-card .benefits i {
+            color: var(--green);
+            margin-right: 6px;
+        }
+        .mantra-card .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .mantra-card .meta span {
+            font-size: 10px;
+            background: #eee;
+            padding: 3px 12px;
+            border-radius: 12px;
+            color: #666;
+        }
+        .mantra-card .meta .god {
+            background: var(--saffron);
+            color: white;
+        }
+        .btn-audio {
+            background: var(--deep);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn-audio:hover { opacity: 0.85; }
+
+        .no-result {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 15px;
+        }
+
+        /* Floating back */
+        .float-back {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--deep);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(123,29,29,0.3);
+            z-index: 99;
+        }
+        .float-back:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 480px) {
+            .mantra-card .devanagari { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="home-btn"><i class="fa-solid fa-house"></i></a>
+    <h1>🕉️ मंत्र ज्ञान कोश</h1>
+    <div class="sub">हर मंत्र का अर्थ, लाभ और विधि</div>
+</header>
+
+<div class="container">
+
+    <!-- Search -->
+    <div class="search-wrap">
+        <i class="fa-solid fa-search"></i>
+        <input type="text" id="searchInput" placeholder="मंत्र खोजें... (जैसे: गायत्री, महामृत्युंजय)" oninput="filterMantras()">
+        <i class="fa-solid fa-microphone" style="color:#aaa; font-size:14px;"></i>
+    </div>
+
+    <!-- Categories -->
+    <div class="cat-tabs" id="catTabs">
+        <button class="cat-tab active" data-cat="all">✨ सभी</button>
+        <button class="cat-tab" data-cat="vedic">📿 वैदिक</button>
+        <button class="cat-tab" data-cat="shiva">🔱 शिव</button>
+        <button class="cat-tab" data-cat="vishnu">🕉️ विष्णु</button>
+        <button class="cat-tab" data-cat="devi">🌺 देवी</button>
+        <button class="cat-tab" data-cat="ganesh">🐘 गणेश</button>
+        <button class="cat-tab" data-cat="hanuman">🐒 हनुमान</button>
+        <button class="cat-tab" data-cat="surya">☀️ सूर्य</button>
+        <button class="cat-tab" data-cat="guru">🌟 गुरु</button>
+    </div>
+
+    <!-- Mantra Grid -->
+    <div class="mantra-grid" id="mantraGrid"></div>
+
+</div>
+
+<a href="index.html" class="float-back"><i class="fa-solid fa-arrow-left"></i></a>
+
+<script>
+// ============================================================
+//  MANTRA DATABASE
+//  Complete with: Mantra, Meaning, Benefits, Category, God
+// ============================================================
+
+const mantraData = [
+    // ========== VEDIC ==========
+    {
+        id: 'gayatri',
+        title: 'गायत्री मंत्र',
+        en: 'Gayatri Mantra',
+        devanagari: 'ॐ भूर्भुवः स्वः ।\nतत्सवितुर्वरेण्यम् ।\nभर्गो देवस्य धीमहि ।\nधियो यो नः प्रचोदयात् ॥',
+        meaning: 'हम उस परम तेजस्वी सविता (सूर्य) का ध्यान करते हैं, जो हमारी बुद्धि को प्रेरित करे।',
+        benefits: 'बुद्धि, एकाग्रता, आत्मविश्वास, नकारात्मकता का नाश, मोक्ष का मार्ग।',
+        category: 'vedic',
+        god: 'सूर्य/सविता',
+        howTo: 'प्रातः सूर्योदय से पहले, 108 बार, पूर्व दिशा में बैठकर।'
+    },
+    {
+        id: 'mrityunjaya',
+        title: 'महामृत्युंजय मंत्र',
+        en: 'Maha Mrityunjaya Mantra',
+        devanagari: 'ॐ त्र्यम्बकं यजामहे ।\nसुगन्धिं पुष्टिवर्धनम् ।\nउर्वारुकमिव बन्धनान् ।\nमृत्योर्मुक्षीय माऽमृतात् ॥',
+        meaning: 'हम त्रिनेत्र शिव की पूजा करते हैं, जो सुगंधित और पोषक हैं। जैसे खीरा बेल से अलग हो जाता है, वैसे ही हमें मृत्यु के बंधन से मुक्त करें।',
+        benefits: 'आयु वृद्धि, रोग नाश, मृत्यु भय से मुक्ति, शांति, आरोग्य।',
+        category: 'shiva',
+        god: 'शिव',
+        howTo: 'सुबह/शाम, 108 बार, रुद्राक्ष माला से।'
+    },
+    {
+        id: 'om',
+        title: 'ॐ',
+        en: 'Om / Pranava',
+        devanagari: 'ॐ',
+        meaning: 'ॐ ब्रह्म का मूल ध्वनि रूप है। यह सृष्टि की प्रथम ध्वनि है।',
+        benefits: 'मन की शांति, एकाग्रता, आध्यात्मिक ऊर्जा, ध्यान में सहायक।',
+        category: 'vedic',
+        god: 'ब्रह्म/परब्रह्म',
+        howTo: 'किसी भी समय, 3, 11, 21, या 108 बार।'
+    },
+
+    // ========== SHIVA ==========
+    {
+        id: 'om-namah-shivaya',
+        title: 'ॐ नमः शिवाय',
+        en: 'Om Namah Shivaya',
+        devanagari: 'ॐ नमः शिवाय',
+        meaning: 'मैं शिव को नमस्कार करता हूँ। यह पाँच अक्षरों का पंचाक्षर मंत्र है।',
+        benefits: 'सभी पापों का नाश, शिव कृपा, मोक्ष, आत्मज्ञान, शांति।',
+        category: 'shiva',
+        god: 'शिव',
+        howTo: 'प्रातः/सायं, 108 बार, रुद्राक्ष माला से।'
+    },
+    {
+        id: 'shiva-dhyana',
+        title: 'शिव ध्यान मंत्र',
+        en: 'Shiva Dhyana Mantra',
+        devanagari: 'कर्पूरगौरं करुणावतारं\nसंसारसारं भुजगेन्द्रहारम्\nसदा बसन्तं हृदयारविन्दे\nभवं भवानी सहितं नमामि',
+        meaning: 'मैं उन शिव को नमस्कार करता हूँ जो कर्पूर के समान गौर हैं, करुणा के अवतार हैं, संसार के सार हैं, सर्पों का हार धारण करते हैं और सदा हृदय-कमल में निवास करते हैं।',
+        benefits: 'शिव कृपा, मन की शांति, भय नाश, मोक्ष।',
+        category: 'shiva',
+        god: 'शिव',
+        howTo: 'सुबह ध्यान के समय, 11 बार।'
+    },
+
+    // ========== VISHNU ==========
+    {
+        id: 'om-narayanaya',
+        title: 'ॐ नमो नारायणाय',
+        en: 'Om Namo Narayanaya',
+        devanagari: 'ॐ नमो नारायणाय',
+        meaning: 'मैं भगवान नारायण (विष्णु) को नमस्कार करता हूँ।',
+        benefits: 'मोक्ष, शांति, भगवान विष्णु की कृपा, भवसागर से पार।',
+        category: 'vishnu',
+        god: 'विष्णु',
+        howTo: 'सुबह/शाम, 108 बार, तुलसी माला से।'
+    },
+    {
+        id: 'vishnu-sahasranam',
+        title: 'विष्णु सहस्रनाम (मूल मंत्र)',
+        en: 'Vishnu Sahasranama Stotram',
+        devanagari: 'श्री विष्णुं श्री विष्णुं श्री विष्णुं ।\nविष्णोः सहस्रनाम स्तोत्रम् ।',
+        meaning: 'भगवान विष्णु के एक हजार नामों का स्तोत्र।',
+        benefits: 'सभी पापों का नाश, भगवान विष्णु की विशेष कृपा, मोक्ष।',
+        category: 'vishnu',
+        god: 'विष्णु',
+        howTo: 'प्रातः स्नान के बाद, श्रद्धापूर्वक।'
+    },
+
+    // ========== DEVI ==========
+    {
+        id: 'durga-mantra',
+        title: 'दुर्गा मंत्र (सर्वमंगल)',
+        en: 'Durga Mantra',
+        devanagari: 'ॐ सर्वमंगल मांगल्ये\nशिवे सर्वार्थ साधिके\nशरण्ये त्र्यम्बके गौरी\nनारायणि नमोस्तु ते',
+        meaning: 'हे सब मंगलों में मंगलमयी, हे शिवा, हे सब कार्यों को सिद्ध करने वाली, हे शरणागतों की रक्षक, हे त्रिनेत्रा गौरी, हे नारायणी, मैं आपको नमस्कार करता हूँ।',
+        benefits: 'सभी प्रकार की बाधाओं का नाश, शत्रुओं का भय, रोग, दरिद्रता।',
+        category: 'devi',
+        god: 'दुर्गा/नारायणी',
+        howTo: 'प्रातः/सायं, 108 बार, लाल चंदन माला से।'
+    },
+    {
+        id: 'saraswati-mantra',
+        title: 'सरस्वती मंत्र',
+        en: 'Saraswati Mantra',
+        devanagari: 'ॐ ऐं महासरस्वत्यै नमः',
+        meaning: 'हे महासरस्वती, मैं आपको नमस्कार करता हूँ।',
+        benefits: 'बुद्धि वृद्धि, स्मरणशक्ति, विद्या, कला, संगीत में प्रवीणता।',
+        category: 'devi',
+        god: 'सरस्वती',
+        howTo: 'प्रातः 5-8 बजे, 108 बार, सफेद वस्त्र धारण कर।'
+    },
+    {
+        id: 'lakshmi-mantra',
+        title: 'लक्ष्मी मंत्र (ॐ श्रीं)',
+        en: 'Lakshmi Mantra',
+        devanagari: 'ॐ श्रीं महालक्ष्म्यै नमः',
+        meaning: 'हे महालक्ष्मी, मैं आपको नमस्कार करता हूँ।',
+        benefits: 'धन, ऐश्वर्य, समृद्धि, सौभाग्य, पारिवारिक सुख।',
+        category: 'devi',
+        god: 'लक्ष्मी',
+        howTo: 'शुक्रवार को, रात 8-10 बजे, 108 बार, कमल गट्टा माला से।'
+    },
+
+    // ========== GANESH ==========
+    {
+        id: 'ganesh-mantra',
+        title: 'ॐ गं गणपतये नमः',
+        en: 'Ganesh Mantra',
+        devanagari: 'ॐ गं गणपतये नमः',
+        meaning: 'हे गणपति, मैं आपको नमस्कार करता हूँ। गं बीज मंत्र है।',
+        benefits: 'सभी कार्यों में सफलता, विघ्न नाश, बुद्धि, विवेक।',
+        category: 'ganesh',
+        god: 'गणेश',
+        howTo: 'प्रातः उठकर, किसी भी कार्य से पहले, 108 बार।'
+    },
+    {
+        id: 'ganesh-atharvashirsha',
+        title: 'गणेश अथर्वशीर्ष (मूल)',
+        en: 'Ganesh Atharvashirsha',
+        devanagari: 'ॐ नमस्ते गणपतये ।\nत्वमेव प्रत्यक्षं तत्वमसि ।',
+        meaning: 'हे गणपति, आपको नमस्कार। आप ही साक्षात ब्रह्म हैं।',
+        benefits: 'आत्मज्ञान, विघ्न नाश, सिद्धि, बुद्धि।',
+        category: 'ganesh',
+        god: 'गणेश',
+        howTo: 'प्रातः 5-7 बजे, 11 बार।'
+    },
+
+    // ========== HANUMAN ==========
+    {
+        id: 'hanuman-mantra',
+        title: 'हनुमान मंत्र (ॐ श्री)',
+        en: 'Hanuman Mantra',
+        devanagari: 'ॐ श्री हनुमते नमः',
+        meaning: 'हे हनुमान, मैं आपको नमस्कार करता हूँ।',
+        benefits: 'बल, बुद्धि, शत्रु नाश, भय मुक्ति, राम कृपा।',
+        category: 'hanuman',
+        god: 'हनुमान',
+        howTo: 'मंगलवार/शनिवार, सुबह/शाम, 108 बार, लाल रुद्राक्ष माला से।'
+    },
+    {
+        id: 'hanuman-chalisa-mool',
+        title: 'हनुमान चालीसा (मूल मंत्र)',
+        en: 'Hanuman Chalisa',
+        devanagari: 'श्री गुरु चरन सरोज रज, निज मन मुकुर सुधारि ।\nबरनऊं रघुबर बिमल जस, जो दायक फल चारि ॥',
+        meaning: 'यह हनुमान चालीसा का पहला दोहा है - गुरु के चरणों की धूल से मन को शुद्ध करके मैं रघुवर का यश वर्णन करता हूँ।',
+        benefits: 'भय मुक्ति, बल, बुद्धि, सभी कष्टों से मुक्ति।',
+        category: 'hanuman',
+        god: 'हनुमान',
+        howTo: 'मंगलवार/शनिवार, सुबह या शाम, पूरा पाठ।'
+    },
+
+    // ========== SURYA ==========
+    {
+        id: 'surya-mantra',
+        title: 'सूर्य मंत्र',
+        en: 'Surya Mantra',
+        devanagari: 'ॐ सूर्याय नमः',
+        meaning: 'हे सूर्य देव, मैं आपको नमस्कार करता हूँ।',
+        benefits: 'नेत्र रोग नाश, आत्मविश्वास, नेतृत्व क्षमता, ऊर्जा।',
+        category: 'surya',
+        god: 'सूर्य',
+        howTo: 'सूर्योदय के समय, पूर्व दिशा में, जल अर्पण करते हुए, 12 बार।'
+    },
+    {
+        id: 'aditya-hridayam',
+        title: 'आदित्य हृदय स्तोत्र',
+        en: 'Aditya Hridayam Stotra',
+        devanagari: 'ॐ आदित्य हृदयं पुण्यं सर्वशत्रु विनाशनम् ।\nजयावहं जपं नित्यम् अक्षयं परमं शिवम् ॥',
+        meaning: 'यह पवित्र आदित्य हृदय स्तोत्र सभी शत्रुओं का नाश करने वाला, विजय देने वाला और अक्षय कल्याणकारी है।',
+        benefits: 'शत्रु नाश, नेत्र रोग, हृदय रोग, आत्मविश्वास, राजयोग।',
+        category: 'surya',
+        god: 'सूर्य',
+        howTo: 'सुबह सूर्योदय के समय, 3-11 बार।'
+    },
+
+    // ========== GURU ==========
+    {
+        id: 'guru-mantra',
+        title: 'गुरु मंत्र',
+        en: 'Guru Mantra',
+        devanagari: 'ॐ गुरवे नमः',
+        meaning: 'हे गुरु, मैं आपको नमस्कार करता हूँ।',
+        benefits: 'गुरु कृपा, ज्ञान, विद्या, सद्बुद्धि, आध्यात्मिक प्रगति।',
+        category: 'guru',
+        god: 'गुरु/बृहस्पति',
+        howTo: 'प्रातः 4-6 बजे, गुरुवार को, 108 बार, पीले चंदन माला से।'
+    },
+    {
+        id: 'dattatreya-mantra',
+        title: 'दत्तात्रेय मंत्र',
+        en: 'Dattatreya Mantra',
+        devanagari: 'ॐ दत्तात्रेयाय नमः',
+        meaning: 'हे दत्तात्रेय, मैं आपको नमस्कार करता हूँ।',
+        benefits: 'त्रिदेव (ब्रह्मा-विष्णु-शिव) की कृपा, सिद्धि, मोक्ष।',
+        category: 'guru',
+        god: 'दत्तात्रेय',
+        howTo: 'प्रातः/सायं, 108 बार, रुद्राक्ष माला से।'
+    },
+
+    // ========== EXTRA IMPORTANT ==========
+    {
+        id: 'kal-bhairav',
+        title: 'काल भैरव मंत्र',
+        en: 'Kaal Bhairav Mantra',
+        devanagari: 'ॐ भैरवाय नमः',
+        meaning: 'हे काल भैरव, मैं आपको नमस्कार करता हूँ।',
+        benefits: 'भय नाश, नकारात्मक ऊर्जा से रक्षा, आत्मबल, शत्रु नाश।',
+        category: 'shiva',
+        god: 'भैरव',
+        howTo: 'मंगलवार/शनिवार, रात 10-12 बजे, 108 बार।'
+    },
+    {
+        id: 'navgrah-mantra',
+        title: 'नवग्रह मंत्र (सूर्य)',
+        en: 'Navgraha Surya Mantra',
+        devanagari: 'ॐ घृणिः सूर्य आदित्यः',
+        meaning: 'हे सूर्य, जो घृणि (तेज) स्वरूप हैं, आदित्य हैं।',
+        benefits: 'नवग्रह शांति, रोग नाश, आयु वृद्धि, तेज।',
+        category: 'vedic',
+        god: 'सूर्य',
+        howTo: 'सुबह, 12 बार, जल अर्पण करते हुए।'
+    }
+];
+
+// ============================================================
+//  RENDER
+// ============================================================
+
+let currentCategory = 'all';
+let searchQuery = '';
+
+function renderMantras() {
+    const grid = document.getElementById('mantraGrid');
+    const filtered = mantraData.filter(m => {
+        const matchCat = currentCategory === 'all' || m.category === currentCategory;
+        const matchSearch = m.title.includes(searchQuery) || 
+                           m.en.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           m.devanagari.includes(searchQuery) ||
+                           m.god.includes(searchQuery);
+        return matchCat && matchSearch;
+    });
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div class="no-result">
+            <i class="fa-solid fa-search" style="font-size:30px;color:#ddd;display:block;margin-bottom:10px;"></i>
+            कोई मंत्र नहीं मिला। कृपया दूसरा शब्द खोजें।
+        </div>`;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(m => `
+        <div class="mantra-card">
+            <div class="title">
+                ${m.title}
+                <span class="en">${m.en}</span>
+            </div>
+            <div class="devanagari">
+                ${m.devanagari.replace(/\n/g, '<br>')}
+                <span class="small">${m.god} • ${m.category}</span>
+            </div>
+            <div class="meaning">
+                <strong><i class="fa-solid fa-book-open" style="color:var(--saffron);"></i> अर्थ:</strong> ${m.meaning}
+            </div>
+            <div class="benefits">
+                 <i class="fa-solid fa-heart"></i> <strong>लाभ:</strong> ${m.benefits}
+            </div>
+            <div class="meta">
+                <span class="god"><i class="fa-solid fa-om"></i> ${m.god}</span>
+                <span><i class="fa-regular fa-clock"></i> ${m.howTo || 'प्रातः/सायं 108 बार'}</span>
+                <span><i class="fa-regular fa-folder"></i> ${m.category}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ============================================================
+//  FILTER FUNCTIONS
+// ============================================================
+
+function filterMantras() {
+    searchQuery = document.getElementById('searchInput').value.trim();
+    renderMantras();
+}
+
+// Category tabs
+document.addEventListener('DOMContentLoaded', function() {
+    renderMantras();
+
+    document.querySelectorAll('.cat-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            currentCategory = this.dataset.cat;
+            renderMantras();
+        });
+    });
+});
+
+// ============================================================
+//  VOICE SEARCH (optional)
+// ============================================================
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const mic = document.querySelector('.search-wrap i.fa-microphone');
+    mic.style.cursor = 'pointer';
+    mic.addEventListener('click', function() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'hi-IN';
+        recognition.start();
+        recognition.onresult = function(e) {
+            const transcript = e.results[0][0].transcript;
+            document.getElementById('searchInput').value = transcript;
+            filterMantras();
+        };
+    });
+}
+</script>
+</body>
+</html>
