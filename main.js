@@ -46,7 +46,6 @@ const routes = {
   pujan: () => window.renderPujanMenu?.(),
   kundli: () => window.renderKundliForm?.(),
   mantra: () => window.renderMantraLibrary?.(),
-  quiz: () => window.renderQuizMenu?.(),
   bhaktiAI: () => window.renderBhaktiAI?.(),
   bookings: () => window.renderMyBookings?.(),
   profile: () => window.renderProfile?.(),
@@ -213,3 +212,4 @@ if ("serviceWorker" in navigator) {
 
 // Expose for other modules
 window.__handleRoute = handleRoute;
+        
