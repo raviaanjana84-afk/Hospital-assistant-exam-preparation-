@@ -58,18 +58,7 @@
 <!-- ================= MAIN CONTENT ================= -->
 <main id="mainContent">
 
-  <!-- ====== SEVICES - TOP ====== -->
-  <p class="section-title" style="margin-top: 0;"><i class="fa-solid fa-bolt"></i> हमारी सेवाएँ</p>
-  <div class="services-grid">
-    <button class="service-card" data-route="hawan"><i class="fa-solid fa-fire"></i><span>हवन</span></button>
-    <button class="service-card" data-route="pujan"><i class="fa-solid fa-hands-praying"></i><span>पूजन</span></button>
-    <button class="service-card" data-route="kundli"><i class="fa-solid fa-star-and-crescent"></i><span>कुंडली</span></button>
-    <button class="service-card" data-route="mantra"><i class="fa-solid fa-book-open"></i><span>मंत्र</span></button>
-    <button class="service-card" data-route="quiz"><i class="fa-solid fa-scroll"></i><span>क्विज</span></button>
-    <button class="service-card" data-route="bhaktiAI"><i class="fa-solid fa-sparkles"></i><span>भक्ति AI</span></button>
-  </div>
-
-  <!-- Panchang + Video card -->
+  <!-- ========== 1. PANCHANG - TOP ========== -->
   <section class="card panchang-card">
     <p class="section-eyebrow">आज का पंचांग</p>
     <div class="panchang-grid">
@@ -97,6 +86,18 @@
     <div class="panchang-suryatime" id="displayMuhurat">लोड हो रहा है...</div>
   </section>
 
+  <!-- ========== 2. HAMARI SEVAYEIN ========== -->
+  <p class="section-title"><i class="fa-solid fa-bolt"></i> हमारी सेवाएँ</p>
+  <div class="services-grid">
+    <button class="service-card" data-route="hawan"><i class="fa-solid fa-fire"></i><span>हवन</span></button>
+    <button class="service-card" data-route="pujan"><i class="fa-solid fa-hands-praying"></i><span>पूजन</span></button>
+    <button class="service-card" data-route="kundli"><i class="fa-solid fa-star-and-crescent"></i><span>कुंडली</span></button>
+    <button class="service-card" data-route="mantra"><i class="fa-solid fa-book-open"></i><span>मंत्र</span></button>
+    <button class="service-card" data-route="quiz"><i class="fa-solid fa-scroll"></i><span>क्विज</span></button>
+    <button class="service-card" data-route="bhaktiAI"><i class="fa-solid fa-sparkles"></i><span>भक्ति AI</span></button>
+  </div>
+
+  <!-- ========== 3. VIDEO CARD ========== -->
   <section class="card" id="videoCard" style="display:none;">
     <p class="section-eyebrow">आज का सत्संग</p>
     <div class="video-wrap">
@@ -104,11 +105,13 @@
     </div>
   </section>
 
+  <!-- ========== 4. SHLOK ========== -->
   <section class="card shlok-card">
     <p class="section-eyebrow">आज का श्लोक</p>
     <p class="shlok-text" id="displayShlok">लोड हो रहा है...</p>
   </section>
 
+  <!-- ========== 5. RASHIFAL ========== -->
   <p class="section-title"><i class="fa-solid fa-star"></i> आज का राशिफल</p>
   <section class="card" id="rashifalCard">
     <div id="rashiSelectView">
@@ -147,6 +150,7 @@
     </div>
   </section>
 
+  <!-- ========== 6. CONTACT ========== -->
   <p class="section-title"><i class="fa-solid fa-phone"></i> संपर्क करें</p>
   <div class="contact-grid">
     <a href="https://wa.me/918319714682" target="_blank" rel="noopener" class="contact-card whatsapp">
@@ -161,6 +165,7 @@
     </a>
   </div>
 
+  <!-- ========== 7. INSTALL BANNER ========== -->
   <div class="card install-banner" id="installBanner" style="display:none;">
     <div style="display:flex; align-items:center; gap:14px;">
       <i class="fa-solid fa-mobile-screen-button" style="font-size:26px; color:var(--gold);"></i>
@@ -172,7 +177,7 @@
     </div>
   </div>
 
-  <!-- Digital Mala -->
+  <!-- ========== 8. DIGITAL JAP MALA ========== -->
   <p class="section-title"><i class="fa-solid fa-dharmachakra"></i> डिजिटल जप माला</p>
   <section class="card mala-card">
     <select id="mantraType" class="select-input">
@@ -201,7 +206,7 @@
   <a href="#" class="nav-link" data-route="profile"><i class="fa-solid fa-user"></i><p>प्रोफाइल</p></a>
 </nav>
 
-<!-- ================= OVERLAY (for sections + auth + admin) ================= -->
+<!-- ================= OVERLAY ================= -->
 <div class="overlay-backdrop" id="overlayBackdrop"></div>
 <div class="overlay-sheet" id="overlaySheet">
   <div class="overlay-handle"></div>
